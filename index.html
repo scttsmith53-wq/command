@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ae2026">
+<meta name="robots" content="noindex,nofollow">
+<title>Command Center — Scott Smith</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111214;--paper:#fffdfa;--soft:#f2efe9;--line:#d9d4ca;--muted:#666b72;--red:#ae2026;--red2:#86161b;--gold:#a77b2f;--green:#16865b;--dark:#0e1116;--max:1080px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Libre Franklin',Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:50px}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(var(--max),calc(100% - 36px));margin:auto}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+.utility{height:32px;background:var(--dark);color:#d5d7da;font-size:10px;letter-spacing:.09em;text-transform:uppercase}
+.utility .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.live{display:inline-flex;align-items:center;gap:8px}
+.udot{width:7px;height:7px;border-radius:50%;background:#ef4148;box-shadow:0 0 0 4px rgba(239,65,72,.16)}
+.masthead{border-bottom:4px solid var(--ink);text-align:center;padding:20px 0 16px}
+.brand-title{font:700 clamp(38px,7vw,60px)/.9 'Newsreader',Georgia,serif;letter-spacing:-.045em;margin:5px 0 0}
+.brand-sub{margin-top:9px;font-size:10px;font-weight:800;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:20px;padding-bottom:10px;margin:34px 0 18px;border-bottom:3px solid var(--ink)}
+.sec-title{font:600 30px/1 'Newsreader',Georgia,serif;margin:0}
+.sec-desc{font-size:11px;color:var(--muted);text-align:right}
+/* tiles */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.tile{background:#fff;border:1px solid var(--line);border-top:5px solid var(--ink);padding:20px;display:flex;flex-direction:column;gap:6px;transition:.15s;min-height:132px}
+.tile:hover{border-color:var(--red);border-top-color:var(--red);transform:translateY(-2px)}
+.tile .ic{font-size:26px;line-height:1}
+.tile .tn{font:600 22px/1.1 'Newsreader',Georgia,serif;margin-top:4px}
+.tile .td{font-size:12.5px;color:var(--muted);flex:1}
+.tile .go{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--red)}
+/* coaching */
+.stats{display:flex;gap:0;border:1px solid var(--line);border-left:0;border-top:0;flex-wrap:wrap}
+.stat{padding:16px 22px;border-left:1px solid var(--line);border-top:1px solid var(--line)}
+.stat b{font:600 30px 'Roboto Mono',monospace;display:block;line-height:1}
+.stat span{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ccard{background:#fff;border:1px solid var(--line);border-top:5px solid var(--ink);padding:20px;margin:14px 0}
+.chead{display:flex;align-items:center;gap:15px;margin-bottom:8px}
+.score{width:52px;height:52px;flex:none;display:grid;place-items:center;font:600 22px 'Roboto Mono',monospace;color:#fff}
+.cname{font:600 21px/1.05 'Newsreader',Georgia,serif}
+.cmeta{font:500 11px 'Roboto Mono',monospace;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.headline{font:600 20px/1.3 'Newsreader',Georgia,serif;font-style:italic;color:#2a2d33;border-left:4px solid var(--red);padding-left:14px;margin:10px 0 14px}
+.blk{margin:12px 0}
+.blk h4{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin:0 0 5px}
+.blk ul{margin:0;padding-left:18px}.blk li{margin:4px 0;font-size:14px}
+.blk p{margin:0;font-size:14px}
+.drill{border-left:4px solid var(--gold);padding:8px 0 8px 13px;background:#faf6ec}
+.next{border-left:4px solid var(--green);padding:8px 0 8px 13px;background:#f3faf6}
+.loading{color:var(--muted);padding:20px 0;font-size:14px}
+@media(max-width:600px){.brand-title{font-size:40px}.sec-head{display:block}.sec-desc{text-align:left;margin-top:6px}}
+</style></head><body>
+
+<div class="utility"><div class="wrap"><span class="live"><span class="udot"></span>Command Center — Private</span><span id="today"></span></div></div>
+<div class="masthead">
+  <div class="eyebrow">Scott Smith · Private Desk</div>
+  <h1 class="brand-title">Command Center</h1>
+  <div class="brand-sub">Everything in one place</div>
+</div>
+
+<div class="wrap">
+
+  <div class="sec-head"><h2 class="sec-title">Lead Engines</h2><div class="sec-desc">Where the leads come from</div></div>
+  <div class="grid">
+    <a class="tile" href="https://d3ot2flwngqxrs.cloudfront.net/" target="_blank"><div class="ic">👁️</div><div class="tn">Reddit Lead Board</div><div class="td">Live buyer &amp; seller signals pulled from Reddit</div><div class="go">Open →</div></a>
+    <a class="tile" href="https://d1n4ty0fde1ml5.cloudfront.net/" target="_blank"><div class="ic">📋</div><div class="tn">Lead Page</div><div class="td">Your leads dashboard</div><div class="go">Open →</div></a>
+  </div>
+
+  <div class="sec-head"><h2 class="sec-title">Client Tools</h2><div class="sec-desc">What you pull up live</div></div>
+  <div class="grid">
+    <a class="tile" href="https://script.smithapprovesme.com" target="_blank"><div class="ic">📞</div><div class="tn">Call Script &amp; Coach</div><div class="td">Homes-first script with on-call Ask Coach</div><div class="go">Open →</div></a>
+    <a class="tile" href="https://partners.smithapprovesme.com" target="_blank"><div class="ic">📰</div><div class="tn">The Smith Report</div><div class="td">Agent market intelligence &amp; referrals</div><div class="go">Open →</div></a>
+    <a class="tile" href="https://portal.smithapprovesme.com" target="_blank"><div class="ic">🏠</div><div class="tn">Buyer &amp; Seller Portal</div><div class="td">Member portal + Market Watch</div><div class="go">Open →</div></a>
+  </div>
+
+  <div class="sec-head" id="coach"><h2 class="sec-title">Prospecting Coach</h2><div class="sec-desc">Every call, graded against your script + the books</div></div>
+  <div class="stats" id="stats"></div>
+  <div id="cards"><div class="loading">Loading your coaching…</div></div>
+
+</div>
+
+<script>
+document.getElementById('today').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+var COACH_URL="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/coach-dashboard?json=1&k=sr-coach-7f3a91c8b2";
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");};
+var col=function(n){return n>=7?"#16865b":n>=5?"#a77b2f":"#ae2026";};
+var li=function(a){return (Array.isArray(a)?a:[]).map(function(x){return "<li>"+esc(x)+"</li>";}).join("");};
+function render(rows){
+  var scored=rows.filter(function(r){return typeof r.coach_score==="number";});
+  var avg=scored.length?(scored.reduce(function(a,r){return a+r.coach_score;},0)/scored.length).toFixed(1):"—";
+  document.getElementById("stats").innerHTML=
+    '<div class="stat"><b>'+avg+'</b><span>Avg score</span></div><div class="stat"><b>'+rows.length+'</b><span>Calls coached</span></div>';
+  document.getElementById("cards").innerHTML=rows.map(function(r){
+    var c=r.coaching||{},s=(r.coach_score==null?"—":r.coach_score),mins=r.duration_sec?Math.round(r.duration_sec/60):0;
+    var dt=r.processed_at?new Date(r.processed_at).toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
+    return '<div class="ccard"><div class="chead"><div class="score" style="background:'+col(r.coach_score||0)+'">'+s+'</div>'+
+      '<div><div class="cname">'+esc(r.label||"Unknown")+'</div><div class="cmeta">'+dt+' · '+mins+' min</div></div></div>'+
+      (c.headline?'<div class="headline">'+esc(c.headline)+'</div>':"")+
+      (c.wins?'<div class="blk"><h4>Wins</h4><ul>'+li(c.wins)+'</ul></div>':"")+
+      (c.misses?'<div class="blk"><h4>Missed</h4><ul>'+li(c.misses)+'</ul></div>':"")+
+      (c.dual_sell?'<div class="blk"><h4>Dual sell</h4><p>'+esc(c.dual_sell)+'</p></div>':"")+
+      (c.objections?'<div class="blk"><h4>Objections</h4><p>'+esc(c.objections)+'</p></div>':"")+
+      (c.practice?'<div class="blk drill"><h4>Drill this</h4><p>'+esc(c.practice)+'</p></div>':"")+
+      (c.next_step?'<div class="blk next"><h4>Next step</h4><p>'+esc(c.next_step)+'</p></div>':"")+
+      '</div>';
+  }).join("")||'<div class="loading">No coached calls yet — they appear here after your next call syncs.</div>';
+}
+fetch(COACH_URL).then(function(r){return r.json();}).then(render).catch(function(){
+  document.getElementById("cards").innerHTML='<div class="loading" style="color:#ae2026">Could not load coaching right now.</div>';
+});
+</script>
+</body></html>
