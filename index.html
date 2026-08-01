@@ -55,6 +55,20 @@ a{color:inherit;text-decoration:none}
 .loading{color:var(--muted);padding:20px 0;font-size:14px}
 @media(max-width:600px){.brand-title{font-size:40px}.sec-head{display:block}.sec-desc{text-align:left;margin-top:6px}}
 </style></head><body>
+<div id="srGate" style="position:fixed;inset:0;z-index:99999;background:#0b2138;display:flex;align-items:center;justify-content:center;font-family:Inter,Arial,sans-serif;padding:16px">
+  <form id="srGateForm" style="width:min(360px,92%);background:#fffdf9;border-radius:16px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="text-align:center;margin-bottom:18px">
+      <div style="width:46px;height:46px;border:1px solid #b89252;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;color:#b89252;font:700 21px Georgia,serif">S</div>
+      <div style="font:800 10px Inter,Arial;letter-spacing:.16em;text-transform:uppercase;color:#b89252">Smith Approves Me</div>
+      <div style="font:600 22px Georgia,serif;color:#0b2138;margin-top:4px">Private Login</div>
+    </div>
+    <input id="srU" placeholder="Username" autocomplete="username" autocapitalize="none" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;margin-bottom:10px;font-size:16px">
+    <input id="srP" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;font-size:16px">
+    <div id="srErr" style="color:#9a3f48;font-size:13px;min-height:18px;margin:6px 0"></div>
+    <button type="submit" id="srBtn" style="width:100%;background:#0b2138;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;font-size:15px;cursor:pointer">Sign in</button>
+  </form>
+</div>
+<script>(function(){var GATE="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/gate";function ck(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):''}var g=document.getElementById('srGate');function reveal(){if(g&&g.parentNode)g.parentNode.removeChild(g)}var t=ck('sr_gate');if(t){fetch(GATE+'?verify='+encodeURIComponent(t)).then(function(r){return r.json()}).then(function(d){if(d&&d.ok)reveal()}).catch(function(){})}document.getElementById('srGateForm').addEventListener('submit',function(e){e.preventDefault();var u=document.getElementById('srU').value.trim(),p=document.getElementById('srP').value,b=document.getElementById('srBtn'),er=document.getElementById('srErr');er.textContent='';b.disabled=true;b.textContent='Signing in…';fetch(GATE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u:u,p:p})}).then(function(r){return r.json()}).then(function(d){if(d&&d.ok){document.cookie='sr_gate='+encodeURIComponent(d.token)+'; domain=.smithapprovesme.com; path=/; max-age=2592000; secure; samesite=Lax';reveal()}else{er.textContent='Wrong username or password.';b.disabled=false;b.textContent='Sign in'}}).catch(function(){er.textContent='Could not reach the server. Try again.';b.disabled=false;b.textContent='Sign in'})})})();</script>
 
 <div class="utility"><div class="wrap"><span class="live"><span class="udot"></span>Command Center — Private</span><span id="today"></span></div></div>
 <div class="masthead">
