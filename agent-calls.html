@@ -9,7 +9,7 @@
 <style>
 :root{--navy:#0b2138;--navy-3:#173b60;--gold:#b89252;--gold-soft:#eadfc9;--ivory:#f4f0e7;--paper:#fffdf9;--ink:#132236;--muted:#667384;--line:#ddd7ca;--green:#2f7a5d;--green-soft:#e8f3ed;--red:#9a3f48;--red-soft:#fbedef;--amber:#9b6b1f;--amber-soft:#fff4df}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),transparent 27rem),var(--ivory);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;padding-bottom:40px}
+body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),transparent 27rem),var(--ivory);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;padding-bottom:132px}
 .app-header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;min-height:66px;padding:10px 16px;color:#fff;background:rgba(11,33,56,.97);border-bottom:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px)}
 .brand-mark{width:34px;height:34px;border:1px solid rgba(255,255,255,.28);display:grid;place-items:center;border-radius:50%;color:var(--gold-soft);font:700 18px Georgia,serif;flex:none}
 .eyebrow{color:var(--gold-soft);font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
@@ -56,6 +56,16 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 .obj .q{font-weight:800;font-size:11px;color:var(--navy);margin-top:11px}
 .obj .a{font-size:13.5px;color:#3a4653;line-height:1.45;margin-top:2px}
 .note{width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:10px 11px;margin-top:11px;font:inherit;font-size:15px;min-height:42px;resize:vertical;background:#fff}
+.coachbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,253,249,.97);backdrop-filter:blur(10px);border-top:2px solid var(--navy);padding:9px 0 calc(9px + env(safe-area-inset-bottom))}
+.cb{width:min(640px,calc(100% - 24px));margin:auto}
+.cb-eyebrow{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+#ans{position:relative;background:#fff;border:1px solid var(--line);border-left:5px solid var(--green);border-radius:10px;padding:12px 36px 12px 14px;color:#123;font-size:15px;line-height:1.5;margin-bottom:9px;display:none;max-height:44vh;overflow-y:auto}
+#ans.err{border-left-color:var(--red)}
+#ansT{white-space:pre-wrap}
+#ansX{position:sticky;top:0;float:right;margin:-4px -30px 0 0;width:26px;height:26px;border:1px solid var(--line);background:#fff;color:#666;font:700 16px/1 Inter;border-radius:7px;cursor:pointer}
+.crow{display:flex;gap:8px}
+#cq{flex:1;border:1px solid #b5b0a5;border-radius:10px;padding:11px 12px;font-size:16px;background:#fff}
+#cask{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:0 18px;font-weight:800;cursor:pointer}
 </style>
 </head>
 <body>
@@ -89,19 +99,19 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
     <summary>📓 Opener &amp; pushback playbook</summary>
     <div class="pb">
       <div class="pblbl">Your opener</div>
-      <div class="say">"Hey [name], it's Scott Smith — you're a realtor in my phone, so we've worked through a deal together at some point. Real quick: I built a weekly Denver market report for agents and I wanted to get it in your hands. What's the best number to text you the link?"</div>
+      <div class="say">"Hey [name], it's Scott Smith — you're a realtor in my phone, so we've worked through a deal together at some point. Real quick: I put together a weekly report built for agents — market breakdown plus some straight-up deal coaching — and I wanted to get it in your hands. What's the best number to text you the link?"</div>
       <div class="pblbl" style="margin-top:16px">If they push back</div>
       <div class="obj">
         <div class="q">"I already have a lender."</div>
-        <div class="a">"Keep them — I'm not asking you to switch. I just wanted you to have the report. If a file ever needs a strong backup, I'm here."</div>
+        <div class="a">"Keep them — I'm not asking you to switch. I just wanted you to have the report; it's built to help you win more deals. If a file ever needs a strong backup, I'm here."</div>
         <div class="q">"What's the catch?"</div>
-        <div class="a">"None. The report's free and yours to use with clients. I just want to be on your radar as a lender who performs."</div>
+        <div class="a">"None. It's free — I built it to actually make you sharper on your deals. I just want to be on your radar as a lender who performs."</div>
         <div class="q">"Aren't you my competition — you're an agent too?"</div>
         <div class="a">"Fair — but I'm reaching out as a lender, not to touch your listings. Anything I can't personally serve, I'd refer to a partner like you."</div>
         <div class="q">"I'm slammed / too busy."</div>
         <div class="a">"Totally get it — 30 seconds. I'll text the link and you look whenever. Busy agents are exactly who I want to work with."</div>
         <div class="q">"Not interested."</div>
-        <div class="a">"No worries — can I at least text you the report so you've got the Denver numbers each week? No pitch, just value."</div>
+        <div class="a">"No worries — can I at least keep sending you the report? It's real deal coaching for agents, no pitch. If it's ever useful, you know where I am."</div>
       </div>
     </div>
   </details>
@@ -109,6 +119,12 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 </div>
 
 <div class="toast" id="toast">Saved</div>
+
+<div class="coachbar"><div class="cb">
+  <div id="ans"><button id="ansX" type="button" aria-label="Close">×</button><div id="ansT"></div></div>
+  <div class="cb-eyebrow">Ask the Coach · agent partners</div>
+  <div class="crow"><input id="cq" placeholder="What did the agent just say?" autocomplete="off"><button id="cask">Ask</button></div>
+</div></div>
 
 <script>
 var API="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/agent-calls";
@@ -123,7 +139,7 @@ function flash(m){toast.textContent=m;toast.classList.add('show');clearTimeout(t
 function updProgress(){document.getElementById('pfill').style.width=Math.min(doneToday/GOAL*100,100)+'%';document.getElementById('ptext').textContent=doneToday+' of '+GOAL+' today';}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function cleanName(c){var n=c.contact_name||c.first_name||'Agent';n=n.replace(/^\s*[^-]*-\s*/,'');return n.trim()||c.first_name||'Agent';}
-function msgFor(c){return "Hi "+(c.first_name||'there')+", it's Scott Smith. You're a realtor in my phone, so at some point we've talked through a real estate deal together. I built a weekly Denver market report for agents and wanted to send it your way: "+REPORT+". Would love your honest thoughts.";}
+function msgFor(c){return "Hi "+(c.first_name||'there')+", it's Scott Smith. You're a realtor in my phone, so at some point we've talked through a real estate deal together. I put together a weekly report built for agents — market breakdown plus straight-up deal coaching — and wanted to get it in your hands: "+REPORT+". Would love your honest thoughts.";}
 function card(c){
   var name=cleanName(c), tel='+1'+c.phone10, body=encodeURIComponent(msgFor(c));
   var retry=c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · no answer yet</span>':'';
@@ -177,6 +193,17 @@ function load(){
   }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
 }
 document.addEventListener('click',function(e){var s=e.target.closest('.say');if(s){var t=s.innerText.replace('⧉','').trim();if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){flash('Copied')},function(){});}}});
+
+// ---- Ask Coach (agent partners) ----
+var SCRIPT_API="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/script";
+var ansEl=document.getElementById('ans'),ansT=document.getElementById('ansT'),cq=document.getElementById('cq'),cask=document.getElementById('cask');
+function showAns(t,err){ansT.textContent=t;ansEl.className=err?'err':'';ansEl.style.display='block';ansEl.scrollTop=0;}
+document.getElementById('ansX').onclick=function(){ansEl.style.display='none';cq.value='';};
+function askCoach(){var q=cq.value.trim();if(!q)return;showAns('Thinking…',false);cask.disabled=true;
+  fetch(SCRIPT_API+'?ask='+encodeURIComponent(q)+'&k='+K+'&ctx=agent').then(function(r){return r.json()}).then(function(d){showAns(d.answer||'No answer.',false)}).catch(function(){showAns('Could not reach the coach. Try again.',true)}).finally(function(){cask.disabled=false});}
+cask.onclick=askCoach;
+cq.addEventListener('keydown',function(e){if(e.key==='Enter')askCoach();});
+
 load();
 </script>
 </body>
