@@ -99,7 +99,7 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
     <summary>📓 Opener &amp; pushback playbook</summary>
     <div class="pb">
       <div class="pblbl">Your opener</div>
-      <div class="say">"Hey [name], it's Scott Smith — you're a realtor in my phone, so we've worked through a deal together at some point. Real quick: I put together a weekly report built for agents — market breakdown plus some straight-up deal coaching — and I wanted to get it in your hands. What's the best number to text you the link?"</div>
+      <div class="say">"Hey [name], it's Scott Smith — I've got your number in my phone from a deal we worked at some point, so I just wanted to give you a quick heads-up that I'm sending something over. It's a weekly report I put together for agents — market breakdown plus some straight-up deal coaching. If you get a sec to look at it, I'd love your honest feedback — and if there's something else that'd actually be useful to you, tell me and I'll work it in."</div>
       <div class="pblbl" style="margin-top:16px">If they push back</div>
       <div class="obj">
         <div class="q">"I already have a lender."</div>
@@ -139,7 +139,7 @@ function flash(m){toast.textContent=m;toast.classList.add('show');clearTimeout(t
 function updProgress(){document.getElementById('pfill').style.width=Math.min(doneToday/GOAL*100,100)+'%';document.getElementById('ptext').textContent=doneToday+' of '+GOAL+' today';}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function cleanName(c){var n=c.contact_name||c.first_name||'Agent';n=n.replace(/^\s*[^-]*-\s*/,'');return n.trim()||c.first_name||'Agent';}
-function msgFor(c){return "Hi "+(c.first_name||'there')+", it's Scott Smith. You're a realtor in my phone, so at some point we've talked through a real estate deal together. I put together a weekly report built for agents — market breakdown plus straight-up deal coaching — and wanted to get it in your hands: "+REPORT+". Would love your honest thoughts.";}
+function msgFor(c){return "Hi "+(c.first_name||'there')+", it's Scott Smith — you're a realtor in my phone from a deal we worked at some point. Just wanted to give you a heads-up I'm sending this your way: a weekly report I built for agents (market plus straight-up deal coaching): "+REPORT+". If you get a sec to look, I'd love your feedback — or tell me if there's something else that'd be more useful to you.";}
 function card(c){
   var name=cleanName(c), tel='+1'+c.phone10, body=encodeURIComponent(msgFor(c));
   var retry=c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · no answer yet</span>':'';
