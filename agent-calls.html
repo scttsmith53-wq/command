@@ -43,6 +43,19 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 .loading{text-align:center;color:var(--muted);padding:30px}
 .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:var(--navy);color:#fff;border-radius:99px;padding:10px 16px;font-size:13px;font-weight:800;transition:.2s;z-index:60}
 .toast.show{opacity:.97;transform:translate(-50%,0)}
+.playbook{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.playbook>summary{cursor:pointer;list-style:none;padding:13px 15px;font:700 14px Inter;color:var(--navy);display:flex;align-items:center;gap:8px}
+.playbook>summary::-webkit-details-marker{display:none}
+.playbook>summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid #b3aea3;border-bottom:2px solid #b3aea3;transform:rotate(45deg);transition:.2s}
+.playbook[open]>summary::after{transform:rotate(-135deg)}
+.pb{padding:0 15px 15px}
+.pblbl{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:12px 0 4px}
+.say{position:relative;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:12px 36px 12px 13px;font-size:15px;line-height:1.5;cursor:pointer;margin:6px 0}
+.say::after{content:"⧉";position:absolute;right:11px;top:10px;color:#c3bdb0;font-size:14px}
+.obj{border-top:1px solid var(--line);margin-top:6px;padding-top:4px}
+.obj .q{font-weight:800;font-size:11px;color:var(--navy);margin-top:11px}
+.obj .a{font-size:13.5px;color:#3a4653;line-height:1.45;margin-top:2px}
+.note{width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:10px 11px;margin-top:11px;font:inherit;font-size:15px;min-height:42px;resize:vertical;background:#fff}
 </style>
 </head>
 <body>
@@ -72,6 +85,26 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
     <div class="ptrack"><div class="pfill" id="pfill"></div></div>
     <div class="ptext" id="ptext">0 of 10 today</div>
   </div>
+  <details class="playbook">
+    <summary>📓 Opener &amp; pushback playbook</summary>
+    <div class="pb">
+      <div class="pblbl">Your opener</div>
+      <div class="say">"Hey [name], it's Scott Smith — you're a realtor in my phone, so we've worked through a deal together at some point. Real quick: I built a weekly Denver market report for agents and I wanted to get it in your hands. What's the best number to text you the link?"</div>
+      <div class="pblbl" style="margin-top:16px">If they push back</div>
+      <div class="obj">
+        <div class="q">"I already have a lender."</div>
+        <div class="a">"Keep them — I'm not asking you to switch. I just wanted you to have the report. If a file ever needs a strong backup, I'm here."</div>
+        <div class="q">"What's the catch?"</div>
+        <div class="a">"None. The report's free and yours to use with clients. I just want to be on your radar as a lender who performs."</div>
+        <div class="q">"Aren't you my competition — you're an agent too?"</div>
+        <div class="a">"Fair — but I'm reaching out as a lender, not to touch your listings. Anything I can't personally serve, I'd refer to a partner like you."</div>
+        <div class="q">"I'm slammed / too busy."</div>
+        <div class="a">"Totally get it — 30 seconds. I'll text the link and you look whenever. Busy agents are exactly who I want to work with."</div>
+        <div class="q">"Not interested."</div>
+        <div class="a">"No worries — can I at least text you the report so you've got the Denver numbers each week? No pitch, just value."</div>
+      </div>
+    </div>
+  </details>
   <div id="list"><div class="loading">Loading your agents…</div></div>
 </div>
 
@@ -102,6 +135,7 @@ function card(c){
       '<a class="call" href="tel:'+tel+'">📞 Call</a>'+
       '<a class="text" href="sms:'+tel+'?&body='+body+'">💬 Text report</a>'+
     '</div>'+
+    '<textarea class="note" placeholder="Notes — what they said, callback time, brokerage…"></textarea>'+
     '<div class="row2">'+
       '<button class="worked" data-a="worked">Texted ✓</button>'+
       '<button class="na" data-a="no_answer">No answer</button>'+
@@ -111,9 +145,10 @@ function card(c){
   return el;
 }
 function act(id,action,el){
+  var note=(el.querySelector('.note')||{}).value||'';
   el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='none';});
   el.classList.add('done');
-  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:id,action:action})})
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:id,action:action,notes:note})})
     .then(function(r){return r.json()}).then(function(d){
       if(!d||!d.ok){flash('Save failed — try again');el.classList.remove('done');el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='';});return;}
       if(action==='worked'){doneToday++;saveDone();updProgress();flash('Logged ✓');}
@@ -141,6 +176,7 @@ function load(){
     listEl.appendChild(h);
   }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
 }
+document.addEventListener('click',function(e){var s=e.target.closest('.say');if(s){var t=s.innerText.replace('⧉','').trim();if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){flash('Copied')},function(){});}}});
 load();
 </script>
 </body>
