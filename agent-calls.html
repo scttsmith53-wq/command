@@ -149,7 +149,7 @@ function card(c){
     '<div class="phone">'+esc(c.phone_display||c.phone10)+'</div>'+
     '<div class="acts">'+
       '<a class="call" href="tel:'+tel+'">📞 Call</a>'+
-      '<a class="text" href="sms:'+tel+'?&body='+body+'">💬 Text report</a>'+
+      '<button class="text" data-send="1">💬 Text via GHL</button>'+
     '</div>'+
     '<textarea class="note" placeholder="Notes — what they said, callback time, brokerage…"></textarea>'+
     '<div class="row2">'+
@@ -157,8 +157,28 @@ function card(c){
       '<button class="na" data-a="no_answer">No answer</button>'+
       '<button class="skip" data-a="skip">Skip</button>'+
     '</div>';
-  el.querySelectorAll('button').forEach(function(b){b.onclick=function(){act(c.id,b.dataset.a,el);};});
+  el.querySelectorAll('button').forEach(function(b){
+    if(b.dataset.send){ b.onclick=function(){sendReport(c,el,b);}; }
+    else { b.onclick=function(){act(c.id,b.dataset.a,el);}; }
+  });
   return el;
+}
+function sendReport(c,el,btn){
+  var note=(el.querySelector('.note')||{}).value||'';
+  var orig=btn.textContent; btn.textContent='Sending…'; btn.style.pointerEvents='none';
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:c.id,action:'send_text',notes:note,message:msgFor(c)})})
+    .then(function(r){return r.json()}).then(function(d){
+      if(d&&d.ok&&d.sent){
+        doneToday++;saveDone();updProgress();flash('Text sent via GHL ✓');
+        el.classList.add('done');el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='none';});
+        setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},300);
+      } else {
+        var reason=(d&&d.reason)?d.reason:'GHL could not send';
+        flash(reason+' — opening Messages');
+        btn.textContent=orig;btn.style.pointerEvents='';
+        try{window.location.href='sms:+1'+c.phone10+'?&body='+encodeURIComponent(msgFor(c));}catch(e){}
+      }
+    }).catch(function(){flash('Network error');btn.textContent=orig;btn.style.pointerEvents='';});
 }
 function act(id,action,el){
   var note=(el.querySelector('.note')||{}).value||'';
@@ -188,7 +208,7 @@ function load(){
       return;
     }
     d.list.forEach(function(c){listEl.appendChild(card(c));});
-    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then <b>Text report</b> (opens Messages ready to send), then mark <b>Texted ✓</b>. Do ~10 a day.';
+    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then <b>Text via GHL</b> — it sends the Smith Report straight from GHL and logs it. Do ~10 a day.';
     listEl.appendChild(h);
   }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
 }
