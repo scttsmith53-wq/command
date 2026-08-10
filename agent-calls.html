@@ -32,6 +32,7 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 .acts a,.acts button{display:flex;align-items:center;justify-content:center;gap:7px;border-radius:11px;padding:14px;font-weight:800;font-size:15px;text-decoration:none;border:1px solid transparent;cursor:pointer}
 .call{background:var(--green);color:#fff;border-color:var(--green)}
 .text{background:var(--gold);color:#fff;border-color:var(--gold)}
+.text2{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:9px;border-radius:11px;padding:13px;font-weight:800;font-size:15px;text-decoration:none;border:1px solid var(--navy-3);background:#fff;color:var(--navy-3)}
 .row2{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:9px}
 .worked{background:var(--navy);color:#fff;border-color:var(--navy)}
 .na{background:#fff;color:#6b5a1a;border-color:#e6d9ad}
@@ -151,6 +152,7 @@ function card(c){
       '<a class="call" href="tel:'+tel+'">📞 Call</a>'+
       '<button class="text" data-send="1">💬 Text via GHL</button>'+
     '</div>'+
+    '<a class="text2" href="sms:'+tel+'?&body='+body+'">📲 Text from my phone (Messages)</a>'+
     '<textarea class="note" placeholder="Notes — what they said, callback time, brokerage…"></textarea>'+
     '<div class="row2">'+
       '<button class="worked" data-a="worked">Texted ✓</button>'+
@@ -208,7 +210,7 @@ function load(){
       return;
     }
     d.list.forEach(function(c){listEl.appendChild(card(c));});
-    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then <b>Text via GHL</b> — it sends the Smith Report straight from GHL and logs it. Do ~10 a day.';
+    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number — then tap <b>Texted ✓</b> to log). Do ~10 a day.';
     listEl.appendChild(h);
   }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
 }
