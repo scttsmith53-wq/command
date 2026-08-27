@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b2138">
+<meta name="robots" content="noindex,nofollow">
+<title>Agent Call Block | Scott Smith</title>
+<style>
+:root{--navy:#0b2138;--navy-3:#173b60;--gold:#b89252;--gold-soft:#eadfc9;--ivory:#f4f0e7;--paper:#fffdf9;--ink:#132236;--muted:#667384;--line:#ddd7ca;--green:#2f7a5d;--green-soft:#e8f3ed;--red:#9a3f48;--red-soft:#fbedef;--amber:#9b6b1f;--amber-soft:#fff4df}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),transparent 27rem),var(--ivory);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;padding-bottom:132px}
+.app-header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;min-height:66px;padding:10px 16px;color:#fff;background:rgba(11,33,56,.97);border-bottom:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px)}
+.brand-mark{width:34px;height:34px;border:1px solid rgba(255,255,255,.28);display:grid;place-items:center;border-radius:50%;color:var(--gold-soft);font:700 18px Georgia,serif;flex:none}
+.eyebrow{color:var(--gold-soft);font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+.htitle{font:600 20px/1 Georgia,serif}
+.counts{margin-left:auto;text-align:right;font-variant-numeric:tabular-nums}
+.counts b{font:700 18px Inter;display:block;line-height:1}
+.counts span{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.wrap{width:min(640px,calc(100% - 24px));margin:16px auto}
+.progress{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.ptrack{flex:1;height:8px;border-radius:99px;background:#e5dfd3;overflow:hidden}
+.pfill{height:100%;width:0;background:var(--gold);transition:.25s}
+.ptext{font-size:12px;color:var(--muted);white-space:nowrap;font-weight:700}
+.card{background:#fff;border:1px solid var(--line);border-left:5px solid var(--navy-3);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 3px 12px rgba(11,33,56,.06)}
+.card.done{opacity:.5}
+.aname{font:600 21px/1.15 Georgia,serif;margin:0}
+.tag{display:inline-block;margin-top:5px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-soft);border-radius:99px;padding:3px 9px}
+.tag.retry{color:var(--amber);border-color:#ecd9ad;background:var(--amber-soft)}
+.phone{margin:9px 0 14px;font:600 17px 'Inter';color:#333;font-variant-numeric:tabular-nums}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.acts a,.acts button{display:flex;align-items:center;justify-content:center;gap:7px;border-radius:11px;padding:14px;font-weight:800;font-size:15px;text-decoration:none;border:1px solid transparent;cursor:pointer}
+.call{background:var(--green);color:#fff;border-color:var(--green)}
+.text{background:var(--gold);color:#fff;border-color:var(--gold)}
+.text2{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:9px;border-radius:11px;padding:13px;font-weight:800;font-size:15px;text-decoration:none;border:1px solid var(--navy-3);background:#fff;color:var(--navy-3)}
+.row2{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:9px}
+.worked{background:var(--navy);color:#fff;border-color:var(--navy)}
+.na{background:#fff;color:#6b5a1a;border-color:#e6d9ad}
+.skip{background:#fff;color:var(--muted);border-color:var(--line)}
+.hint{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.4}
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.empty h2{font:600 24px Georgia,serif;color:var(--ink);margin:0 0 8px}
+.bigbtn{display:inline-block;margin-top:14px;background:var(--navy);color:#fff;border:0;border-radius:12px;padding:14px 22px;font-weight:800;cursor:pointer}
+.loading{text-align:center;color:var(--muted);padding:30px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:var(--navy);color:#fff;border-radius:99px;padding:10px 16px;font-size:13px;font-weight:800;transition:.2s;z-index:60}
+.toast.show{opacity:.97;transform:translate(-50%,0)}
+.playbook{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.playbook>summary{cursor:pointer;list-style:none;padding:13px 15px;font:700 14px Inter;color:var(--navy);display:flex;align-items:center;gap:8px}
+.playbook>summary::-webkit-details-marker{display:none}
+.playbook>summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid #b3aea3;border-bottom:2px solid #b3aea3;transform:rotate(45deg);transition:.2s}
+.playbook[open]>summary::after{transform:rotate(-135deg)}
+.pb{padding:0 15px 15px}
+.pblbl{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:12px 0 4px}
+.say{position:relative;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:12px 36px 12px 13px;font-size:15px;line-height:1.5;cursor:pointer;margin:6px 0}
+.say::after{content:"⧉";position:absolute;right:11px;top:10px;color:#c3bdb0;font-size:14px}
+.obj{border-top:1px solid var(--line);margin-top:6px;padding-top:4px}
+.obj .q{font-weight:800;font-size:11px;color:var(--navy);margin-top:11px}
+.obj .a{font-size:13.5px;color:#3a4653;line-height:1.45;margin-top:2px}
+.note{width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:10px 11px;margin-top:11px;font:inherit;font-size:15px;min-height:42px;resize:vertical;background:#fff}
+.coachbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,253,249,.97);backdrop-filter:blur(10px);border-top:2px solid var(--navy);padding:9px 0 calc(9px + env(safe-area-inset-bottom))}
+.cb{width:min(640px,calc(100% - 24px));margin:auto}
+.cb-eyebrow{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+#ans{position:relative;background:#fff;border:1px solid var(--line);border-left:5px solid var(--green);border-radius:10px;padding:12px 36px 12px 14px;color:#123;font-size:15px;line-height:1.5;margin-bottom:9px;display:none;max-height:44vh;overflow-y:auto}
+#ans.err{border-left-color:var(--red)}
+#ansT{white-space:pre-wrap}
+#ansX{position:sticky;top:0;float:right;margin:-4px -30px 0 0;width:26px;height:26px;border:1px solid var(--line);background:#fff;color:#666;font:700 16px/1 Inter;border-radius:7px;cursor:pointer}
+.crow{display:flex;gap:8px}
+#cq{flex:1;border:1px solid #b5b0a5;border-radius:10px;padding:11px 12px;font-size:16px;background:#fff}
+#cask{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:0 18px;font-weight:800;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="srGate" style="position:fixed;inset:0;z-index:99999;background:#0b2138;display:flex;align-items:center;justify-content:center;font-family:Inter,Arial,sans-serif;padding:16px">
+  <form id="srGateForm" style="width:min(360px,92%);background:#fffdf9;border-radius:16px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="text-align:center;margin-bottom:18px">
+      <div style="width:46px;height:46px;border:1px solid #b89252;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;color:#b89252;font:700 21px Georgia,serif">S</div>
+      <div style="font:800 10px Inter,Arial;letter-spacing:.16em;text-transform:uppercase;color:#b89252">Smith Approves Me</div>
+      <div style="font:600 22px Georgia,serif;color:#0b2138;margin-top:4px">Private Login</div>
+    </div>
+    <input id="srU" placeholder="Username" autocomplete="username" autocapitalize="none" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;margin-bottom:10px;font-size:16px">
+    <input id="srP" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;font-size:16px">
+    <div id="srErr" style="color:#9a3f48;font-size:13px;min-height:18px;margin:6px 0"></div>
+    <button type="submit" id="srBtn" style="width:100%;background:#0b2138;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;font-size:15px;cursor:pointer">Sign in</button>
+  </form>
+</div>
+<script>(function(){var GATE="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/gate";function ck(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):''}var g=document.getElementById('srGate');function reveal(){if(g&&g.parentNode)g.parentNode.removeChild(g)}var t=ck('sr_gate');if(t){fetch(GATE+'?verify='+encodeURIComponent(t)).then(function(r){return r.json()}).then(function(d){if(d&&d.ok)reveal()}).catch(function(){})}document.getElementById('srGateForm').addEventListener('submit',function(e){e.preventDefault();var u=document.getElementById('srU').value.trim(),p=document.getElementById('srP').value,b=document.getElementById('srBtn'),er=document.getElementById('srErr');er.textContent='';b.disabled=true;b.textContent='Signing in…';fetch(GATE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u:u,p:p})}).then(function(r){return r.json()}).then(function(d){if(d&&d.ok){document.cookie='sr_gate='+encodeURIComponent(d.token)+'; domain=.smithapprovesme.com; path=/; max-age=2592000; secure; samesite=Lax';reveal()}else{er.textContent='Wrong username or password.';b.disabled=false;b.textContent='Sign in'}}).catch(function(){er.textContent='Could not reach the server. Try again.';b.disabled=false;b.textContent='Sign in'})})})();</script>
+
+<header class="app-header">
+  <div class="brand-mark">S</div>
+  <div><div class="eyebrow">Prospecting</div><div class="htitle">Agent Call Block</div></div>
+  <div class="counts"><b id="cRemain">—</b><span>agents left</span></div>
+</header>
+
+<div class="wrap">
+  <div class="progress">
+    <div class="ptrack"><div class="pfill" id="pfill"></div></div>
+    <div class="ptext" id="ptext">0 of 10 today</div>
+  </div>
+  <details class="playbook">
+    <summary>📓 Opener &amp; pushback playbook</summary>
+    <div class="pb">
+      <div class="pblbl">Your opener</div>
+      <div class="say">"Hey [name], it's Scott Smith — I've got your number in my phone from a deal we worked at some point, so I just wanted to give you a quick heads-up that I'm sending something over. It's a weekly report I put together for agents — market breakdown plus some straight-up deal coaching. If you get a sec to look at it, I'd love your honest feedback — and if there's something else that'd actually be useful to you, tell me and I'll work it in."</div>
+      <div class="pblbl" style="margin-top:16px">If they push back</div>
+      <div class="obj">
+        <div class="q">"I already have a lender."</div>
+        <div class="a">"Keep them — I'm not asking you to switch. I just wanted you to have the report; it's built to help you win more deals. If a file ever needs a strong backup, I'm here."</div>
+        <div class="q">"What's the catch?"</div>
+        <div class="a">"None. It's free — I built it to actually make you sharper on your deals. I just want to be on your radar as a lender who performs."</div>
+        <div class="q">"Aren't you my competition — you're an agent too?"</div>
+        <div class="a">"Fair — but I'm reaching out as a lender, not to touch your listings. Anything I can't personally serve, I'd refer to a partner like you."</div>
+        <div class="q">"I'm slammed / too busy."</div>
+        <div class="a">"Totally get it — 30 seconds. I'll text the link and you look whenever. Busy agents are exactly who I want to work with."</div>
+        <div class="q">"Not interested."</div>
+        <div class="a">"No worries — can I at least keep sending you the report? It's real deal coaching for agents, no pitch. If it's ever useful, you know where I am."</div>
+      </div>
+    </div>
+  </details>
+  <div id="list"><div class="loading">Loading your agents…</div></div>
+</div>
+
+<div class="toast" id="toast">Saved</div>
+
+<div class="coachbar"><div class="cb">
+  <div id="ans"><button id="ansX" type="button" aria-label="Close">×</button><div id="ansT"></div></div>
+  <div class="cb-eyebrow">Ask the Coach · agent partners</div>
+  <div class="crow"><input id="cq" placeholder="What did the agent just say?" autocomplete="off"><button id="cask">Ask</button></div>
+</div></div>
+
+<script>
+var API="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/agent-calls";
+var K="sr-coach-7f3a91c8b2";
+var REPORT="https://partners.smithapprovesme.com";           // The Smith Report link that gets texted
+var GOAL=10;
+var listEl=document.getElementById('list'),toast=document.getElementById('toast');
+var today=new Date().toISOString().slice(0,10);
+var doneToday=0; try{var s=JSON.parse(localStorage.getItem('agentcalls_done')||'{}'); if(s.date===today) doneToday=s.n||0;}catch(e){}
+function saveDone(){try{localStorage.setItem('agentcalls_done',JSON.stringify({date:today,n:doneToday}));}catch(e){}}
+function flash(m){toast.textContent=m;toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){toast.classList.remove('show')},1400);}
+function updProgress(){document.getElementById('pfill').style.width=Math.min(doneToday/GOAL*100,100)+'%';document.getElementById('ptext').textContent=doneToday+' of '+GOAL+' today';}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cleanName(c){var n=c.contact_name||c.first_name||'Agent';n=n.replace(/^\s*[^-]*-\s*/,'');return n.trim()||c.first_name||'Agent';}
+function msgFor(c){return "Hi "+(c.first_name||'there')+", it's Scott Smith — you're a realtor in my phone from a deal we worked at some point. Just wanted to give you a heads-up I'm sending this your way: a weekly report I built for agents (market plus straight-up deal coaching): "+REPORT+". If you get a sec to look, I'd love your feedback — or tell me if there's something else that'd be more useful to you.";}
+function card(c){
+  var name=cleanName(c), tel='+1'+c.phone10, body=encodeURIComponent(msgFor(c));
+  var retry=c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · no answer yet</span>':'';
+  var el=document.createElement('div');el.className='card';el.dataset.id=c.id;
+  el.innerHTML=
+    '<h3 class="aname">'+esc(name)+'</h3>'+retry+
+    '<div class="phone">'+esc(c.phone_display||c.phone10)+'</div>'+
+    '<div class="acts">'+
+      '<a class="call" href="tel:'+tel+'">📞 Call</a>'+
+      '<button class="text" data-send="1">💬 Text via GHL</button>'+
+    '</div>'+
+    '<a class="text2" href="sms:'+tel+'?&body='+body+'">📲 Text from my phone (Messages)</a>'+
+    '<textarea class="note" placeholder="Notes — what they said, callback time, brokerage…"></textarea>'+
+    '<div class="row2">'+
+      '<button class="worked" data-a="worked">Texted ✓</button>'+
+      '<button class="na" data-a="no_answer">No answer</button>'+
+      '<button class="skip" data-a="skip">Skip</button>'+
+    '</div>';
+  el.querySelectorAll('button').forEach(function(b){
+    if(b.dataset.send){ b.onclick=function(){sendReport(c,el,b);}; }
+    else { b.onclick=function(){act(c.id,b.dataset.a,el);}; }
+  });
+  return el;
+}
+function sendReport(c,el,btn){
+  var note=(el.querySelector('.note')||{}).value||'';
+  var orig=btn.textContent; btn.textContent='Sending…'; btn.style.pointerEvents='none';
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:c.id,action:'send_text',notes:note,message:msgFor(c)})})
+    .then(function(r){return r.json()}).then(function(d){
+      if(d&&d.ok&&d.sent){
+        doneToday++;saveDone();updProgress();flash('Text sent via GHL ✓');
+        el.classList.add('done');el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='none';});
+        setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},300);
+      } else {
+        var reason=(d&&d.reason)?d.reason:'GHL could not send';
+        flash(reason+' — opening Messages');
+        btn.textContent=orig;btn.style.pointerEvents='';
+        try{window.location.href='sms:+1'+c.phone10+'?&body='+encodeURIComponent(msgFor(c));}catch(e){}
+      }
+    }).catch(function(){flash('Network error');btn.textContent=orig;btn.style.pointerEvents='';});
+}
+function act(id,action,el){
+  var note=(el.querySelector('.note')||{}).value||'';
+  el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='none';});
+  el.classList.add('done');
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:id,action:action,notes:note})})
+    .then(function(r){return r.json()}).then(function(d){
+      if(!d||!d.ok){flash('Save failed — try again');el.classList.remove('done');el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='';});return;}
+      if(action==='worked'){doneToday++;saveDone();updProgress();flash('Logged ✓');}
+      else if(action==='no_answer'){flash('Marked no-answer');}
+      else{flash('Skipped');}
+      setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},260);
+    }).catch(function(){flash('Network error');el.classList.remove('done');el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='';});});
+}
+function load(){
+  listEl.innerHTML='<div class="loading">Loading your agents…</div>';
+  fetch(API+'?data=1&k='+K+'&n=10').then(function(r){return r.json()}).then(function(d){
+    document.getElementById('cRemain').textContent=(d.active_remaining!=null?d.active_remaining.toLocaleString():'—');
+    updProgress();
+    if(!d.list||!d.list.length){listEl.innerHTML='<div class="empty"><h2>All caught up 🎉</h2>No more active agents in the queue.</div>';return;}
+    listEl.innerHTML='';
+    if(doneToday>=GOAL){
+      var b=document.createElement('div');b.className='empty';
+      b.innerHTML='<h2>That’s your 10 for today ✅</h2>Nice work. You can keep going or come back tomorrow.<br><button class="bigbtn" id="more">Keep going</button>';
+      listEl.appendChild(b);
+      document.getElementById('more').onclick=function(){b.remove();d.list.forEach(function(c){listEl.appendChild(card(c));});};
+      return;
+    }
+    d.list.forEach(function(c){listEl.appendChild(card(c));});
+    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number — then tap <b>Texted ✓</b> to log). Do ~10 a day.';
+    listEl.appendChild(h);
+  }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
+}
+document.addEventListener('click',function(e){var s=e.target.closest('.say');if(s){var t=s.innerText.replace('⧉','').trim();if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){flash('Copied')},function(){});}}});
+
+// ---- Ask Coach (agent partners) ----
+var SCRIPT_API="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/script";
+var ansEl=document.getElementById('ans'),ansT=document.getElementById('ansT'),cq=document.getElementById('cq'),cask=document.getElementById('cask');
+function showAns(t,err){ansT.textContent=t;ansEl.className=err?'err':'';ansEl.style.display='block';ansEl.scrollTop=0;}
+document.getElementById('ansX').onclick=function(){ansEl.style.display='none';cq.value='';};
+function askCoach(){var q=cq.value.trim();if(!q)return;showAns('Thinking…',false);cask.disabled=true;
+  fetch(SCRIPT_API+'?ask='+encodeURIComponent(q)+'&k='+K+'&ctx=agent').then(function(r){return r.json()}).then(function(d){showAns(d.answer||'No answer.',false)}).catch(function(){showAns('Could not reach the coach. Try again.',true)}).finally(function(){cask.disabled=false});}
+cask.onclick=askCoach;
+cq.addEventListener('keydown',function(e){if(e.key==='Enter')askCoach();});
+
+load();
+</script>
+</body>
+</html>
