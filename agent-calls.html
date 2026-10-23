@@ -34,9 +34,16 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 .text{background:var(--gold);color:#fff;border-color:var(--gold)}
 .text2{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:9px;border-radius:11px;padding:13px;font-weight:800;font-size:15px;text-decoration:none;border:1px solid var(--navy-3);background:#fff;color:var(--navy-3)}
 .row2{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:9px}
+.row3{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:8px;margin-top:8px}
+.row3 button{display:flex;align-items:center;justify-content:center;gap:6px;border-radius:11px;padding:12px 6px;font-weight:800;font-size:14px;border:1px solid transparent;cursor:pointer}
 .worked{background:var(--navy);color:#fff;border-color:var(--navy)}
 .na{background:#fff;color:#6b5a1a;border-color:#e6d9ad}
 .skip{background:#fff;color:var(--muted);border-color:var(--line)}
+.savenote{background:var(--paper);color:var(--navy);border-color:var(--navy-3)}
+.talked{background:#fff;color:var(--green);border-color:#bcd9c2}
+.fup{background:#fff;color:var(--navy-3);border-color:var(--line)}
+.prior{margin-top:11px;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--navy-3);border-radius:10px;padding:9px 11px;font-size:13px;line-height:1.45;color:#3a4653;white-space:pre-wrap;max-height:120px;overflow-y:auto}
+.priorlbl{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
 .hint{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.4}
 .empty{text-align:center;padding:40px 16px;color:var(--muted)}
 .empty h2{font:600 24px Georgia,serif;color:var(--ink);margin:0 0 8px}
@@ -165,7 +172,9 @@ function cleanName(c){var n=c.contact_name||c.first_name||'Agent';n=n.replace(/^
 function msgFor(c){return "Hi "+(c.first_name||'there')+", it's Scott Smith — you're a realtor in my phone from a deal we worked at some point. Just wanted to give you a heads-up I'm sending this your way: a weekly report I built for agents (market plus straight-up deal coaching): "+REPORT+". If you get a sec to look, I'd love your feedback — or tell me if there's something else that'd be more useful to you.";}
 function card(c){
   var name=cleanName(c), tel='+1'+c.phone10, body=encodeURIComponent(msgFor(c));
-  var retry=c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · no answer yet</span>':'';
+  var retry=c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · '+(c.texted?'already texted':'no answer yet')+'</span>':'';
+  var prior=(c.notes&&String(c.notes).trim())
+    ? '<div class="prior"><div class="priorlbl">Earlier notes</div>'+esc(String(c.notes).trim())+'</div>' : '';
   var el=document.createElement('div');el.className='card';el.dataset.id=c.id;
   el.innerHTML=
     '<h3 class="aname">'+esc(name)+'</h3>'+retry+
@@ -175,9 +184,15 @@ function card(c){
       '<button class="text" data-send="1">💬 Text via GHL</button>'+
     '</div>'+
     '<a class="text2" href="sms:'+tel+'?&body='+body+'">📲 Text from my phone (Messages)</a>'+
+    prior+
     '<textarea class="note" placeholder="Notes — what they said, callback time, brokerage…"></textarea>'+
+    '<div class="row3">'+
+      '<button class="savenote" data-a="save_note">💾 Save note</button>'+
+      '<button class="talked" data-a="talked">Talked</button>'+
+      '<button class="fup" data-a="follow_up">Call back</button>'+
+    '</div>'+
     '<div class="row2">'+
-      '<button class="worked" data-a="worked">Texted ✓</button>'+
+      '<button class="worked" data-a="worked">Done — texted</button>'+
       '<button class="na" data-a="no_answer">No answer</button>'+
       '<button class="skip" data-a="skip">Skip</button>'+
     '</div>';
@@ -204,18 +219,42 @@ function sendReport(c,el,btn){
       }
     }).catch(function(){flash('Network error');btn.textContent=orig;btn.style.pointerEvents='';});
 }
+function stamp(){var d=new Date();return ('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2)+'/'+String(d.getFullYear()).slice(-2);}
+// Append a just-saved note into the card's "Earlier notes" block so Scott sees it stick.
+function showSaved(el,note){
+  var box=el.querySelector('.prior');
+  if(!box){
+    box=document.createElement('div');box.className='prior';
+    box.innerHTML='<div class="priorlbl">Earlier notes</div>';
+    el.insertBefore(box,el.querySelector('.note'));
+  }
+  box.appendChild(document.createTextNode((box.childNodes.length>1?'\n':'')+stamp()+': '+note));
+  box.scrollTop=box.scrollHeight;
+}
 function act(id,action,el){
-  var note=(el.querySelector('.note')||{}).value||'';
-  el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='none';});
-  el.classList.add('done');
+  var ta=el.querySelector('.note'), note=(ta&&ta.value||'').trim();
+  var btns=el.querySelectorAll('button,a');
+  // Save note / Talked / Call back keep the agent in rotation — the card stays put.
+  var keeps=(action==='save_note'||action==='talked'||action==='follow_up');
+  if(action==='save_note'&&!note){flash('Type a note first');if(ta)ta.focus();return;}
+  btns.forEach(function(x){x.style.pointerEvents='none';});
+  if(!keeps)el.classList.add('done');
   fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:id,action:action,notes:note})})
     .then(function(r){return r.json()}).then(function(d){
-      if(!d||!d.ok){flash('Save failed — try again');el.classList.remove('done');el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='';});return;}
+      if(!d||!d.ok){flash('Save failed — try again');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});return;}
+      if(keeps){
+        if(note){showSaved(el,note);ta.value='';}
+        btns.forEach(function(x){x.style.pointerEvents='';});
+        if(action==='save_note'){flash('Note saved to GHL ✓');return;}
+        flash(action==='talked'?'Call logged — stays in your list':'Call back logged — stays in your list');
+        setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},500);
+        return;
+      }
       if(action==='worked'){doneToday++;saveDone();updProgress();flash('Logged ✓');}
       else if(action==='no_answer'){flash('Marked no-answer');}
       else{flash('Skipped');}
       setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},260);
-    }).catch(function(){flash('Network error');el.classList.remove('done');el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='';});});
+    }).catch(function(){flash('Network error');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});});
 }
 function load(){
   listEl.innerHTML='<div class="loading">Loading your agents…</div>';
@@ -232,7 +271,7 @@ function load(){
       return;
     }
     d.list.forEach(function(c){listEl.appendChild(card(c));});
-    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number — then tap <b>Texted ✓</b> to log). Do ~10 a day.';
+    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number). <b>Save note</b> writes to GHL and leaves the card open. <b>Talked</b> and <b>Call back</b> log the call and keep them in rotation. <b>Done — texted</b>, <b>No answer</b> and <b>Skip</b> clear them from today. Do ~10 a day.';
     listEl.appendChild(h);
   }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
 }
