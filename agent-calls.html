@@ -74,6 +74,11 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 .crow{display:flex;gap:8px}
 #cq{flex:1;border:1px solid #b5b0a5;border-radius:10px;padding:11px 12px;font-size:16px;background:#fff}
 #cask{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:0 18px;font-weight:800;cursor:pointer}
+.picker{background:#fff;border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.picker label{display:block;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.picker select{width:100%;border:1px solid #b5b0a5;border-radius:10px;padding:11px 12px;font:700 16px Inter,-apple-system,sans-serif;color:var(--navy);background:var(--paper)}
+.picker .pv{margin-top:9px;font-size:13.5px;line-height:1.45;color:#3a4653;white-space:pre-wrap}
+.tag.recall{color:var(--green);border-color:#bcd9c2;background:var(--green-soft)}
 </style>
 </head>
 <body>
@@ -101,7 +106,13 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 <div class="wrap">
   <div class="progress">
     <div class="ptrack"><div class="pfill" id="pfill"></div></div>
-    <div class="ptext" id="ptext">0 of 10 today</div>
+    <div class="ptext" id="ptext">0 of 20 today</div>
+  </div>
+  <div class="picker">
+    <label for="tplSel">Recall text · last week's agents <span id="recallCount"></span></label>
+    <select id="tplSel"></select>
+    <div class="pv" id="tplPv"></div>
+    <div class="pv" style="font-size:12px;color:var(--muted)">New agents automatically get the "still here" intro with your two links.</div>
   </div>
   <details class="playbook">
     <summary>📓 Opener &amp; pushback playbook</summary>
@@ -160,7 +171,7 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 var API="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/agent-calls";
 var K="sr-coach-7f3a91c8b2";
 var REPORT="https://partners.smithapprovesme.com";           // The Smith Report link that gets texted
-var GOAL=10;
+var GOAL=20;          // daily target: 10 recalls + 10 new
 var listEl=document.getElementById('list'),toast=document.getElementById('toast');
 var today=new Date().toISOString().slice(0,10);
 var doneToday=0; try{var s=JSON.parse(localStorage.getItem('agentcalls_done')||'{}'); if(s.date===today) doneToday=s.n||0;}catch(e){}
@@ -169,21 +180,43 @@ function flash(m){toast.textContent=m;toast.classList.add('show');clearTimeout(t
 function updProgress(){document.getElementById('pfill').style.width=Math.min(doneToday/GOAL*100,100)+'%';document.getElementById('ptext').textContent=doneToday+' of '+GOAL+' today';}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function cleanName(c){var n=c.contact_name||c.first_name||'Agent';n=n.replace(/^\s*[^-]*-\s*/,'');return n.trim()||c.first_name||'Agent';}
-function msgFor(c){return "Hi "+(c.first_name||'there')+", it's Scott Smith — you're a realtor in my phone from a deal we worked at some point. Just wanted to give you a heads-up I'm sending this your way: a weekly report I built for agents (market plus straight-up deal coaching): "+REPORT+". If you get a sec to look, I'd love your feedback — or tell me if there's something else that'd be more useful to you.";}
+// Text templates -- pick one from the dropdown at the top. {name} = agent's first name.
+var TEMPLATES=[
+  {key:'flyer',label:'Listing flyer offer',text:"Hi {name}, Scott with Citywide again. Got a listing that's sitting? I'll make you a free buyer payment flyer for it (monthly payment + cash to close) for showings or your open house. Just send me the address."},
+  {key:'stalled',label:'Stalled buyers',text:"Hi {name}, Scott with Citywide again. Any buyers this year who went quiet because of payment or a denial somewhere else? Happy to take a free second look. A different program or a rate buydown often changes the answer."},
+  {key:'tough',label:'Toughest file',text:"Hi {name}, it's Scott with Citywide. What's the toughest file on your desk right now? Self-employed, credit issues, a recent job change? Send me the scenario and I'll give you a straight answer within 24 hours. "+REPORT}
+];
+var tplKey='flyer'; try{var sk=localStorage.getItem('agentcalls_tpl'); if(sk&&TEMPLATES.some(function(t){return t.key===sk;})) tplKey=sk;}catch(e){}
+// NEW agents (never called) always get this intro text.
+var NEW_TEXT={label:'Still here intro',text:"Hi {name}, this is Scott with Citywide Mortgage. I know a lot of loan officers are falling by the wayside, but I wanted to let you know I'm still here and would love to help with any deals you have on your desk.\n\nWe also have a great 10% down program for investment properties, so let me know if you have anyone it would be useful for.\n\n"+REPORT+"\nhttps://www.citywidehm.com/loan-officers/scott-smith-2244351"};
+function tplFor(c){return (c&&c.is_recall)?curTpl():NEW_TEXT;}
+function labelFor(c){return tplFor(c).label;}
+function curTpl(){for(var i=0;i<TEMPLATES.length;i++){if(TEMPLATES[i].key===tplKey)return TEMPLATES[i];}return TEMPLATES[0];}
+function msgFor(c){return tplFor(c).text.replace(/\{name\}/g,(c&&c.first_name)||'there');}
+(function(){
+  var sel=document.getElementById('tplSel'),pv=document.getElementById('tplPv');
+  TEMPLATES.forEach(function(t,i){var o=document.createElement('option');o.value=t.key;o.textContent=(i+1)+'. '+t.label;sel.appendChild(o);});
+  sel.value=tplKey;
+  function show(){pv.textContent=msgFor({first_name:'[name]',is_recall:true});}
+  sel.onchange=function(){tplKey=sel.value;try{localStorage.setItem('agentcalls_tpl',tplKey);}catch(e){}show();document.querySelectorAll('.card').forEach(function(el){var l=el.querySelector('.sendsLbl');if(l&&el._c)l.textContent=labelFor(el._c);});flash('Recall text: '+curTpl().label);};
+  show();
+})();
 function card(c){
-  var name=cleanName(c), tel='+1'+c.phone10, body=encodeURIComponent(msgFor(c));
-  var retry=c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · '+(c.texted?'already texted':'no answer yet')+'</span>':'';
+  var name=cleanName(c), tel='+1'+c.phone10;
+  var retry=c.is_recall?'<span class="tag recall">Recall · called last week</span>'
+    :(c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · '+(c.texted?'already texted':'no answer yet')+'</span>':'');
   var prior=(c.notes&&String(c.notes).trim())
     ? '<div class="prior"><div class="priorlbl">Earlier notes</div>'+esc(String(c.notes).trim())+'</div>' : '';
-  var el=document.createElement('div');el.className='card';el.dataset.id=c.id;
+  var el=document.createElement('div');el.className='card';el.dataset.id=c.id;el._c=c;
   el.innerHTML=
     '<h3 class="aname">'+esc(name)+'</h3>'+retry+
     '<div class="phone">'+esc(c.phone_display||c.phone10)+'</div>'+
+    '<div class="hint" style="margin:-8px 0 10px">Text: <b class="sendsLbl">'+esc(labelFor(c))+'</b></div>'+
     '<div class="acts">'+
       '<a class="call" href="tel:'+tel+'">📞 Call</a>'+
       '<button class="text" data-send="1">💬 Text via GHL</button>'+
     '</div>'+
-    '<a class="text2" href="sms:'+tel+'?&body='+body+'">📲 Text from my phone (Messages)</a>'+
+    '<a class="text2" href="sms:'+tel+'">📲 Text from my phone (Messages)</a>'+
     prior+
     '<textarea class="note" placeholder="Notes — what they said, callback time, brokerage…"></textarea>'+
     '<div class="row3">'+
@@ -200,12 +233,15 @@ function card(c){
     if(b.dataset.send){ b.onclick=function(){sendReport(c,el,b);}; }
     else { b.onclick=function(){act(c.id,b.dataset.a,el);}; }
   });
+  // Build the Messages link at tap time so it uses whichever text is picked right now.
+  var t2=el.querySelector('.text2');
+  t2.onclick=function(){t2.href='sms:'+tel+'?&body='+encodeURIComponent(msgFor(c));};
   return el;
 }
 function sendReport(c,el,btn){
   var note=(el.querySelector('.note')||{}).value||'';
   var orig=btn.textContent; btn.textContent='Sending…'; btn.style.pointerEvents='none';
-  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:c.id,action:'send_text',notes:note,message:msgFor(c)})})
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:c.id,action:'send_text',notes:note,message:msgFor(c),label:labelFor(c)})})
     .then(function(r){return r.json()}).then(function(d){
       if(d&&d.ok&&d.sent){
         doneToday++;saveDone();updProgress();flash('Text sent via GHL ✓');
@@ -239,7 +275,7 @@ function act(id,action,el){
   if(action==='save_note'&&!note){flash('Type a note first');if(ta)ta.focus();return;}
   btns.forEach(function(x){x.style.pointerEvents='none';});
   if(!keeps)el.classList.add('done');
-  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:id,action:action,notes:note})})
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:id,action:action,notes:note,label:action==='worked'?labelFor(el._c):''})})
     .then(function(r){return r.json()}).then(function(d){
       if(!d||!d.ok){flash('Save failed — try again');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});return;}
       if(keeps){
@@ -258,20 +294,21 @@ function act(id,action,el){
 }
 function load(){
   listEl.innerHTML='<div class="loading">Loading your agents…</div>';
-  fetch(API+'?data=1&k='+K+'&n=10').then(function(r){return r.json()}).then(function(d){
+  fetch(API+'?data=1&k='+K+'&n=20&r=10').then(function(r){return r.json()}).then(function(d){
     document.getElementById('cRemain').textContent=(d.active_remaining!=null?d.active_remaining.toLocaleString():'—');
+    document.getElementById('recallCount').textContent=d.recall_remaining?'· '+d.recall_remaining+' recalls left':'';
     updProgress();
     if(!d.list||!d.list.length){listEl.innerHTML='<div class="empty"><h2>All caught up 🎉</h2>No more active agents in the queue.</div>';return;}
     listEl.innerHTML='';
     if(doneToday>=GOAL){
       var b=document.createElement('div');b.className='empty';
-      b.innerHTML='<h2>That’s your 10 for today ✅</h2>Nice work. You can keep going or come back tomorrow.<br><button class="bigbtn" id="more">Keep going</button>';
+      b.innerHTML='<h2>That’s your 20 for today ✅</h2>Nice work. You can keep going or come back tomorrow.<br><button class="bigbtn" id="more">Keep going</button>';
       listEl.appendChild(b);
       document.getElementById('more').onclick=function(){b.remove();d.list.forEach(function(c){listEl.appendChild(card(c));});};
       return;
     }
     d.list.forEach(function(c){listEl.appendChild(card(c));});
-    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number). <b>Save note</b> writes to GHL and leaves the card open. <b>Talked</b> and <b>Call back</b> log the call and keep them in rotation. <b>Done — texted</b>, <b>No answer</b> and <b>Skip</b> clear them from today. Do ~10 a day.';
+    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number). <b>Save note</b> writes to GHL and leaves the card open. <b>Talked</b> and <b>Call back</b> log the call and keep them in rotation. <b>Done — texted</b>, <b>No answer</b> and <b>Skip</b> clear them from today. Do 20 a day: up to 10 recalls (green tag) + 10 new.';
     listEl.appendChild(h);
   }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
 }
