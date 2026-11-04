@@ -79,6 +79,7 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 .picker select{width:100%;border:1px solid #b5b0a5;border-radius:10px;padding:11px 12px;font:700 16px Inter,-apple-system,sans-serif;color:var(--navy);background:var(--paper)}
 .picker .pv{margin-top:9px;font-size:13.5px;line-height:1.45;color:#3a4653;white-space:pre-wrap}
 .tag.recall{color:var(--green);border-color:#bcd9c2;background:var(--green-soft)}
+.tag.camp{color:#6b3fa0;border-color:#d9c9ef;background:#f4eefc}
 </style>
 </head>
 <body>
@@ -189,7 +190,12 @@ var TEMPLATES=[
 var tplKey='flyer'; try{var sk=localStorage.getItem('agentcalls_tpl'); if(sk&&TEMPLATES.some(function(t){return t.key===sk;})) tplKey=sk;}catch(e){}
 // NEW agents (never called) always get this intro text.
 var NEW_TEXT={label:'Still here intro',text:"Hi {name}, this is Scott with Citywide Mortgage. I know a lot of loan officers are falling by the wayside, but I wanted to let you know I'm still here and would love to help with any deals you have on your desk.\n\nWe also have a great 10% down program for investment properties, so let me know if you have anyone it would be useful for.\n\n"+REPORT+"\nhttps://www.citywidehm.com/loan-officers/scott-smith-2244351"};
-function tplFor(c){return (c&&c.is_recall)?curTpl():NEW_TEXT;}
+// Campaign rows carry their own text on the queue row and ignore the dropdown.
+function campLabel(c){var s=(c&&c.campaign)||'';return /^weekend_preapproval/.test(s)?'Weekend pre-approvals':(s||'Campaign');}
+function tplFor(c){
+  if(c&&c.campaign_message) return {key:'campaign',label:campLabel(c),text:c.campaign_message};
+  return (c&&c.is_recall)?curTpl():NEW_TEXT;
+}
 function labelFor(c){return tplFor(c).label;}
 function curTpl(){for(var i=0;i<TEMPLATES.length;i++){if(TEMPLATES[i].key===tplKey)return TEMPLATES[i];}return TEMPLATES[0];}
 function msgFor(c){return tplFor(c).text.replace(/\{name\}/g,(c&&c.first_name)||'there');}
@@ -203,8 +209,9 @@ function msgFor(c){return tplFor(c).text.replace(/\{name\}/g,(c&&c.first_name)||
 })();
 function card(c){
   var name=cleanName(c), tel='+1'+c.phone10;
-  var retry=c.is_recall?'<span class="tag recall">Recall · called last week</span>'
-    :(c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · '+(c.texted?'already texted':'no answer yet')+'</span>':'');
+  var retry=c.campaign_message?'<span class="tag camp">'+esc(campLabel(c))+' · text only</span>'
+    :(c.is_recall?'<span class="tag recall">Recall · called last week</span>'
+    :(c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · '+(c.texted?'already texted':'no answer yet')+'</span>':''));
   var prior=(c.notes&&String(c.notes).trim())
     ? '<div class="prior"><div class="priorlbl">Earlier notes</div>'+esc(String(c.notes).trim())+'</div>' : '';
   var el=document.createElement('div');el.className='card';el.dataset.id=c.id;el._c=c;
@@ -244,7 +251,9 @@ function sendReport(c,el,btn){
   fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:c.id,action:'send_text',notes:note,message:msgFor(c),label:labelFor(c)})})
     .then(function(r){return r.json()}).then(function(d){
       if(d&&d.ok&&d.sent){
-        doneToday++;saveDone();updProgress();flash('Text sent via GHL ✓');
+        // Campaign texts are not calls -- they don't count toward the daily goal.
+        if(!c.campaign_message){doneToday++;saveDone();updProgress();}
+        flash('Text sent via GHL ✓');
         el.classList.add('done');el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='none';});
         setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},300);
       } else {
@@ -286,7 +295,7 @@ function act(id,action,el){
         setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},500);
         return;
       }
-      if(action==='worked'){doneToday++;saveDone();updProgress();flash('Logged ✓');}
+      if(action==='worked'){if(!(el._c&&el._c.campaign_message)){doneToday++;saveDone();updProgress();}flash('Logged ✓');}
       else if(action==='no_answer'){flash('Marked no-answer');}
       else{flash('Skipped');}
       setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},260);
@@ -308,6 +317,11 @@ function load(){
       return;
     }
     d.list.forEach(function(c){listEl.appendChild(card(c));});
+    if(d.campaign_remaining){
+      var cb=document.createElement('div');cb.className='hint';
+      cb.innerHTML='<b>'+d.campaign_remaining+' campaign texts</b> are queued at the bottom of this list (purple tag). Those are text-only — no call needed — and they don\'t count toward your '+GOAL+'.';
+      listEl.appendChild(cb);
+    }
     var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number). <b>Save note</b> writes to GHL and leaves the card open. <b>Talked</b> and <b>Call back</b> log the call and keep them in rotation. <b>Done — texted</b>, <b>No answer</b> and <b>Skip</b> clear them from today. Do 20 a day: up to 10 recalls (green tag) + 10 new.';
     listEl.appendChild(h);
   }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
