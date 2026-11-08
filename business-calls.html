@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b2138">
 <meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Command">
+
 <title>Business Call Block | IDD</title>
 <style>
 :root{--navy:#0b2138;--navy-3:#173b60;--gold:#b89252;--gold-soft:#eadfc9;--ivory:#f4f0e7;--paper:#fffdf9;--ink:#132236;--muted:#667384;--line:#ddd7ca;--green:#2f7a5d;--green-soft:#e8f3ed;--red:#9a3f48;--red-soft:#fbedef;--amber:#9b6b1f;--amber-soft:#fff4df}
@@ -310,5 +317,6 @@ cask.onclick=askCoach;
 cq.addEventListener('keydown',function(e){if(e.key==='Enter')askCoach();});
 load();
 </script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});}</script>
 </body>
 </html>
