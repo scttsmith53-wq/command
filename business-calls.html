@@ -110,6 +110,26 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 .fuwrap button{flex:1.2;border-radius:11px;padding:12px 6px;font-weight:800;font-size:14px;cursor:pointer}
 .dnc{background:#fff;color:#888;border-color:var(--line);font-size:12px!important}
 @media(max-width:420px){.filters{grid-template-columns:1fr 1fr}.filters>div:first-child{grid-column:1/-1}}
+
+.rptbtn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:8px;border-radius:11px;padding:12px;font-weight:800;font-size:14px;border:1px solid var(--gold);background:#fff;color:var(--navy);cursor:pointer}
+#rpt{position:fixed;inset:0;z-index:200;background:#e9e5dc;overflow-y:auto;display:none}
+#rpt .tb{position:sticky;top:0;display:flex;gap:8px;justify-content:center;padding:10px;background:#0b2138;z-index:2}
+#rpt .tb button{border:0;border-radius:10px;padding:11px 16px;font-weight:800;font-size:14px;cursor:pointer}
+#rpt .tb .pr{background:#b89252;color:#fff}#rpt .tb .cl{background:#fff;color:#0b2138}
+.rp{width:min(760px,calc(100% - 20px));margin:16px auto 40px;background:#fff;color:#18222e;padding:34px 38px;border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.12);font:14px/1.5 Inter,Arial,sans-serif}
+.rp .hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0b2138;padding-bottom:12px}
+.rp .brand{font:800 11px Inter;letter-spacing:.14em;text-transform:uppercase;color:#b89252}
+.rp h1{font:600 26px/1.15 Georgia,serif;margin:4px 0 2px;color:#0b2138}
+.rp .sub{color:#5d6876;font-size:13px}
+.rp h2{font:700 13px Inter;letter-spacing:.08em;text-transform:uppercase;color:#0b2138;margin:22px 0 8px}
+.rp table{width:100%;border-collapse:collapse}
+.rp td{padding:8px 6px;border-bottom:1px solid #e6e1d6;vertical-align:top}
+.rp td.st{width:118px;font-weight:800;font-size:12px;white-space:nowrap}
+.rp .ok{color:#2f7a5d}.rp .warn{color:#9b6b1f}.rp .unk{color:#7a8592}
+.rp ol{margin:6px 0 0 18px;padding:0}.rp li{margin:5px 0}
+.rp .ft{margin-top:24px;border-top:1px solid #e6e1d6;padding-top:12px;font-size:12px;color:#5d6876;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.rp .note{font-size:11px;color:#8a929c;margin-top:10px}
+@media print{body{padding:0!important;background:#fff!important}body>*:not(#rpt){display:none!important}#rpt{position:static;display:block!important;background:#fff;overflow:visible}#rpt .tb{display:none}.rp{box-shadow:none;margin:0 auto;width:100%;padding:0}@page{margin:12mm}.rp{font-size:12.5px}.rp td{padding:5px 6px}.rp h2{margin:14px 0 6px}.rp h1{font-size:23px}.rp .ft{margin-top:14px}}
 </style>
 </head>
 <body>
@@ -192,6 +212,7 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 </div>
 
 <div class="toast" id="toast">Saved</div>
+<div id="rpt"><div class="tb"><button class="pr" type="button" onclick="window.print()">Save as PDF / Print</button><button class="cl" type="button" onclick="closeReport()">Close</button></div><div id="rptBody"></div></div>
 
 <div class="coachbar"><div class="cb">
   <div id="ans"><button id="ansX" type="button" aria-label="Close">×</button><div id="ansT"></div></div>
@@ -260,7 +281,9 @@ function card(c){
     '<div class="row3"><button class="savenote" data-a="save_note">📝 Save note</button><button class="talked" data-a="talked">💬 Talked</button><button class="na" data-a="voicemail">📼 Voicemail</button></div>'+
     '<div class="fuwrap"><input type="date" class="fudate" value="'+tomorrow+'"><button class="fup" data-a="follow_up">🔁 Call back</button></div>'+
     '<div class="row3"><button class="na" data-a="no_answer">No answer</button><button class="nope" data-a="not_interested">Not interested</button><button class="skip" data-a="skip">Skip</button></div>'+
-    '<div class="row4"><button class="skip" data-a="wrong_number">Wrong #</button><button class="dnc" data-a="dnc">⛔ Do not call</button></div>';
+    '<div class="row4"><button class="skip" data-a="wrong_number">Wrong #</button><button class="dnc" data-a="dnc">⛔ Do not call</button></div>'+
+    '<button class="rptbtn" type="button" data-rpt="1">📄 Make site report (PDF)</button>';
+  el.querySelector('[data-rpt]').onclick=function(){openReport(c);};
   el.querySelectorAll('button[data-a]').forEach(function(b){b.onclick=function(){act(c.id,b.getAttribute('data-a'),el);};});
   return el;
 }
@@ -288,6 +311,46 @@ function act(id,action,el){
       setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},300);
     }).catch(function(){flash('Network error');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});});
 }
+// ---- One-page "Website & Google check" report for the business (IDD branded). Built in the browser; nothing is sent anywhere. ----
+function rptRow(label,state,text){var cls=state==='ok'?'ok':state==='warn'?'warn':'unk';var tag=state==='ok'?'✓ Looks good':state==='warn'?'⚠ Opportunity':'— Not verified';return '<tr><td class="st '+cls+'">'+tag+'</td><td><b>'+label+'</b><br>'+text+'</td></tr>';}
+function openReport(c){
+  var a=c.site_audit||{},yr=new Date().getFullYear(),rows=[],wins=[];
+  var site=c.website?String(c.website).replace(/^https?:\/\/(www\.)?/i,'').replace(/\/$/,''):'';
+  var read=c.website&&!a.unreadable;
+  if(!c.website){rows.push(rptRow('Website','warn','We couldn\'t find a website linked to your Google listing. Most customers check a website before they call.'));wins.push('Add a simple mobile website to your Google listing so searchers can see your work and contact you.');}
+  else if(a.unreadable){rows.push(rptRow('Website','unk','Our check couldn\'t load '+esc(site)+' (it may be slow, blocked or down). Worth confirming it loads quickly on a phone.'));}
+  else rows.push(rptRow('Website','ok',esc(site)+' loaded for our check.'));
+  if(read){
+    rows.push(a.https===false?rptRow('Secure connection (https)','warn','Your site doesn\'t appear to use https. Browsers can label it "Not secure," which costs trust.'):rptRow('Secure connection (https)','ok','Your site loads securely.'));
+    if(a.https===false)wins.push('Turn on https (a free SSL certificate) so browsers stop flagging the site.');
+    rows.push(a.mobile===false?rptRow('Mobile-friendly','warn','We didn\'t find the setup sites use to fit phone screens. Most local searches happen on a phone.'):rptRow('Mobile-friendly','ok','Your site appears to be set up for phones.'));
+    if(a.mobile===false)wins.push('Make the site mobile-friendly so it reads well on a phone.');
+    rows.push(a.booking?rptRow('Online booking','ok','We found a way to book or schedule online.'):rptRow('Online booking','warn','We didn\'t find a way to book or request an appointment online. Customers who don\'t want to call may move on.'));
+    if(!a.booking)wins.push('Add a "Book an estimate" button so customers can schedule without calling.');
+    var chat=a.chat||a.text;
+    rows.push(chat?rptRow('Chat or text','ok','We found a chat or text option on your site.'):rptRow('Chat or text','warn','We didn\'t find a chat or text-us option. Some widgets load in ways our check can\'t see, so this is worth a quick look.'));
+    if(a.h247){rows.push(rptRow('After-hours calls',chat?'ok':'warn','Your site advertises 24/7 or emergency service.'+(chat?'':' Make sure every after-hours call is answered or captured; a missed emergency call usually goes to the next company on Google.')));if(!chat)wins.push('Capture after-hours calls automatically so emergency jobs aren\'t lost to voicemail.');}
+    else if(a.phone_only){rows.push(rptRow('Ways to reach you','warn','A phone call looks like the only way to reach you. If the call is missed while you\'re on a job, the lead is gone.'));wins.push('Give customers a second way in (text, form or an answering assistant) for calls you can\'t pick up.');}
+    if(a.copyright&&a.copyright<yr-1){rows.push(rptRow('Site freshness','warn','Your site footer shows © '+esc(a.copyright)+'. An outdated date can make a business look inactive.'));wins.push('Update the footer date and refresh your photos and services.');}
+  }
+  if(c.rating!=null||c.reviews!=null){
+    var rv=c.reviews||0,rt=c.rating;
+    var good=rt>=4.5&&rv>=50;
+    rows.push(rptRow('Google reviews',good?'ok':'warn','Rating '+(rt!=null?rt+'★':'n/a')+' from '+rv+' review'+(rv===1?'':'s')+'. '+(good?'Strong — keep the momentum going.':'More recent reviews help you rank higher and win the call.')));
+    if(!good)wins.push('Send a review request by text after every job.');
+  }
+  if(!wins.length)wins.push('Your basics look solid. The next step is making sure every call and web visitor turns into a booked job.');
+  var d=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('rptBody').innerHTML='<div class="rp">'+
+    '<div class="hd"><div><div class="brand">Infinity Digital Development</div><h1>Website &amp; Google Check</h1><div class="sub">Prepared for <b>'+esc(c.name)+'</b>'+(c.city?' · '+esc(c.city)+(c.state?', '+esc(c.state):''):'')+'</div></div><div class="sub" style="text-align:right">'+d+'</div></div>'+
+    '<h2>What we checked</h2><table>'+rows.join('')+'</table>'+
+    '<h2>Quick wins</h2><ol><li>'+wins.slice(0,5).join('</li><li>')+'</li></ol>'+
+    '<div class="note">This is an automated outside look at your public website and Google listing on '+d+'. Some features (like chat widgets) can be missed by automated checks, so treat items marked ⚠ as things worth a look, not conclusions.</div>'+
+    '<div class="ft"><div><b>Scott Smith</b> · Infinity Digital Development · Westminster, CO</div><div>720-252-7037 · scott@infinitydigitaldev.com · infinitydigitaldev.com</div></div></div>';
+  var r=document.getElementById('rpt');r.style.display='block';r.scrollTop=0;
+  try{document.title='Website & Google Check — '+c.name;}catch(e){}
+}
+function closeReport(){document.getElementById('rpt').style.display='none';document.title='Business Call Block | IDD';}
 function n(v){return (v||0).toLocaleString();}
 function load(){
   listEl.innerHTML='<div class="loading">Loading businesses…</div>';updProgress();
