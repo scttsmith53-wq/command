@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b2138">
+<meta name="robots" content="noindex,nofollow">
+<title>Business Call Block | IDD</title>
+<style>
+:root{--navy:#0b2138;--navy-3:#173b60;--gold:#b89252;--gold-soft:#eadfc9;--ivory:#f4f0e7;--paper:#fffdf9;--ink:#132236;--muted:#667384;--line:#ddd7ca;--green:#2f7a5d;--green-soft:#e8f3ed;--red:#9a3f48;--red-soft:#fbedef;--amber:#9b6b1f;--amber-soft:#fff4df}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),transparent 27rem),var(--ivory);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;padding-bottom:132px}
+.app-header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;min-height:66px;padding:10px 16px;color:#fff;background:rgba(11,33,56,.97);border-bottom:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px)}
+.brand-mark{width:34px;height:34px;border:1px solid rgba(255,255,255,.28);display:grid;place-items:center;border-radius:50%;color:var(--gold-soft);font:700 18px Georgia,serif;flex:none}
+.eyebrow{color:var(--gold-soft);font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+.htitle{font:600 20px/1 Georgia,serif}
+.counts{margin-left:auto;text-align:right;font-variant-numeric:tabular-nums}
+.counts b{font:700 18px Inter;display:block;line-height:1}
+.counts span{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.wrap{width:min(640px,calc(100% - 24px));margin:16px auto}
+.progress{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.ptrack{flex:1;height:8px;border-radius:99px;background:#e5dfd3;overflow:hidden}
+.pfill{height:100%;width:0;background:var(--gold);transition:.25s}
+.ptext{font-size:12px;color:var(--muted);white-space:nowrap;font-weight:700}
+.card{background:#fff;border:1px solid var(--line);border-left:5px solid var(--navy-3);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 3px 12px rgba(11,33,56,.06)}
+.card.done{opacity:.5}
+.aname{font:600 21px/1.15 Georgia,serif;margin:0}
+.tag{display:inline-block;margin-top:5px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-soft);border-radius:99px;padding:3px 9px}
+.tag.retry{color:var(--amber);border-color:#ecd9ad;background:var(--amber-soft)}
+.phone{margin:9px 0 14px;font:600 17px 'Inter';color:#333;font-variant-numeric:tabular-nums}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.acts a,.acts button{display:flex;align-items:center;justify-content:center;gap:7px;border-radius:11px;padding:14px;font-weight:800;font-size:15px;text-decoration:none;border:1px solid transparent;cursor:pointer}
+.call{background:var(--green);color:#fff;border-color:var(--green)}
+.text{background:var(--gold);color:#fff;border-color:var(--gold)}
+.text2{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:9px;border-radius:11px;padding:13px;font-weight:800;font-size:15px;text-decoration:none;border:1px solid var(--navy-3);background:#fff;color:var(--navy-3)}
+.row2{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:9px}
+.row3{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:8px;margin-top:8px}
+.row3 button{display:flex;align-items:center;justify-content:center;gap:6px;border-radius:11px;padding:12px 6px;font-weight:800;font-size:14px;border:1px solid transparent;cursor:pointer}
+.worked{background:var(--navy);color:#fff;border-color:var(--navy)}
+.na{background:#fff;color:#6b5a1a;border-color:#e6d9ad}
+.skip{background:#fff;color:var(--muted);border-color:var(--line)}
+.savenote{background:var(--paper);color:var(--navy);border-color:var(--navy-3)}
+.talked{background:#fff;color:var(--green);border-color:#bcd9c2}
+.fup{background:#fff;color:var(--navy-3);border-color:var(--line)}
+.prior{margin-top:11px;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--navy-3);border-radius:10px;padding:9px 11px;font-size:13px;line-height:1.45;color:#3a4653;white-space:pre-wrap;max-height:120px;overflow-y:auto}
+.priorlbl{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.hint{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.4}
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.empty h2{font:600 24px Georgia,serif;color:var(--ink);margin:0 0 8px}
+.bigbtn{display:inline-block;margin-top:14px;background:var(--navy);color:#fff;border:0;border-radius:12px;padding:14px 22px;font-weight:800;cursor:pointer}
+.loading{text-align:center;color:var(--muted);padding:30px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:var(--navy);color:#fff;border-radius:99px;padding:10px 16px;font-size:13px;font-weight:800;transition:.2s;z-index:60}
+.toast.show{opacity:.97;transform:translate(-50%,0)}
+.playbook{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.playbook>summary{cursor:pointer;list-style:none;padding:13px 15px;font:700 14px Inter;color:var(--navy);display:flex;align-items:center;gap:8px}
+.playbook>summary::-webkit-details-marker{display:none}
+.playbook>summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid #b3aea3;border-bottom:2px solid #b3aea3;transform:rotate(45deg);transition:.2s}
+.playbook[open]>summary::after{transform:rotate(-135deg)}
+.pb{padding:0 15px 15px}
+.pblbl{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:12px 0 4px}
+.say{position:relative;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:12px 36px 12px 13px;font-size:15px;line-height:1.5;cursor:pointer;margin:6px 0}
+.say::after{content:"⧉";position:absolute;right:11px;top:10px;color:#c3bdb0;font-size:14px}
+.obj{border-top:1px solid var(--line);margin-top:6px;padding-top:4px}
+.obj .q{font-weight:800;font-size:11px;color:var(--navy);margin-top:11px}
+.obj .a{font-size:13.5px;color:#3a4653;line-height:1.45;margin-top:2px}
+.note{width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:10px 11px;margin-top:11px;font:inherit;font-size:15px;min-height:42px;resize:vertical;background:#fff}
+.coachbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,253,249,.97);backdrop-filter:blur(10px);border-top:2px solid var(--navy);padding:9px 0 calc(9px + env(safe-area-inset-bottom))}
+.cb{width:min(640px,calc(100% - 24px));margin:auto}
+.cb-eyebrow{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+#ans{position:relative;background:#fff;border:1px solid var(--line);border-left:5px solid var(--green);border-radius:10px;padding:12px 36px 12px 14px;color:#123;font-size:15px;line-height:1.5;margin-bottom:9px;display:none;max-height:44vh;overflow-y:auto}
+#ans.err{border-left-color:var(--red)}
+#ansT{white-space:pre-wrap}
+#ansX{position:sticky;top:0;float:right;margin:-4px -30px 0 0;width:26px;height:26px;border:1px solid var(--line);background:#fff;color:#666;font:700 16px/1 Inter;border-radius:7px;cursor:pointer}
+.crow{display:flex;gap:8px}
+#cq{flex:1;border:1px solid #b5b0a5;border-radius:10px;padding:11px 12px;font-size:16px;background:#fff}
+#cask{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:0 18px;font-weight:800;cursor:pointer}
+.picker{background:#fff;border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.picker label{display:block;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.picker select{width:100%;border:1px solid #b5b0a5;border-radius:10px;padding:11px 12px;font:700 16px Inter,-apple-system,sans-serif;color:var(--navy);background:var(--paper)}
+.picker .pv{margin-top:9px;font-size:13.5px;line-height:1.45;color:#3a4653;white-space:pre-wrap}
+.tag.recall{color:var(--green);border-color:#bcd9c2;background:var(--green-soft)}
+.tag.camp{color:#6b3fa0;border-color:#d9c9ef;background:#f4eefc}
+.filters{background:#fff;border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:12px 14px;margin-bottom:14px;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px}
+.filters label{display:block;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.filters select{width:100%;border:1px solid #b5b0a5;border-radius:10px;padding:10px 8px;font:700 14px Inter,-apple-system,sans-serif;color:var(--navy);background:var(--paper)}
+.stats{grid-column:1/-1;font-size:12px;color:var(--muted);line-height:1.5}
+.stats b{color:var(--navy)}
+.meta{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5}
+.meta a{color:var(--navy-3);font-weight:700;word-break:break-all}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.chip{font-size:11px;font-weight:800;border-radius:99px;padding:4px 10px;border:1px solid var(--line);background:var(--paper);color:var(--navy)}
+.chip.hot{background:var(--green-soft);border-color:#bcd9c2;color:var(--green)}
+.chip.warm{background:var(--amber-soft);border-color:#ecd9ad;color:var(--amber)}
+.tps{margin-top:11px;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:9px 11px}
+.tps ul{margin:4px 0 0;padding-left:18px;font-size:13.5px;line-height:1.45;color:#3a4653}
+.tps li{margin:3px 0}
+.row4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.row4 button,.row3 button{display:flex;align-items:center;justify-content:center;gap:6px;border-radius:11px;padding:12px 6px;font-weight:800;font-size:14px;border:1px solid transparent;cursor:pointer}
+.hotbtn{background:var(--green);color:#fff;border-color:var(--green)}
+.nope{background:#fff;color:var(--red);border-color:#ebc9cd}
+.fuwrap{display:flex;gap:8px;margin-top:8px;align-items:center}
+.fuwrap input{flex:1;border:1px solid #d7d1c6;border-radius:10px;padding:10px;font:inherit;font-size:15px;background:#fff}
+.fuwrap button{flex:1.2;border-radius:11px;padding:12px 6px;font-weight:800;font-size:14px;cursor:pointer}
+.dnc{background:#fff;color:#888;border-color:var(--line);font-size:12px!important}
+@media(max-width:420px){.filters{grid-template-columns:1fr 1fr}.filters>div:first-child{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div id="srGate" style="position:fixed;inset:0;z-index:99999;background:#0b2138;display:flex;align-items:center;justify-content:center;font-family:Inter,Arial,sans-serif;padding:16px">
+  <form id="srGateForm" style="width:min(360px,92%);background:#fffdf9;border-radius:16px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="text-align:center;margin-bottom:18px">
+      <div style="width:46px;height:46px;border:1px solid #b89252;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;color:#b89252;font:700 21px Georgia,serif">S</div>
+      <div style="font:800 10px Inter,Arial;letter-spacing:.16em;text-transform:uppercase;color:#b89252">Smith Approves Me</div>
+      <div style="font:600 22px Georgia,serif;color:#0b2138;margin-top:4px">Private Login</div>
+    </div>
+    <input id="srU" placeholder="Username" autocomplete="username" autocapitalize="none" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;margin-bottom:10px;font-size:16px">
+    <input id="srP" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;font-size:16px">
+    <div id="srErr" style="color:#9a3f48;font-size:13px;min-height:18px;margin:6px 0"></div>
+    <button type="submit" id="srBtn" style="width:100%;background:#0b2138;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;font-size:15px;cursor:pointer">Sign in</button>
+  </form>
+</div>
+<script>(function(){var GATE="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/gate";function ck(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):''}var g=document.getElementById('srGate');function reveal(){if(g&&g.parentNode)g.parentNode.removeChild(g)}var t=ck('sr_gate');if(t){fetch(GATE+'?verify='+encodeURIComponent(t)).then(function(r){return r.json()}).then(function(d){if(d&&d.ok)reveal()}).catch(function(){})}document.getElementById('srGateForm').addEventListener('submit',function(e){e.preventDefault();var u=document.getElementById('srU').value.trim(),p=document.getElementById('srP').value,b=document.getElementById('srBtn'),er=document.getElementById('srErr');er.textContent='';b.disabled=true;b.textContent='Signing in…';fetch(GATE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u:u,p:p})}).then(function(r){return r.json()}).then(function(d){if(d&&d.ok){document.cookie='sr_gate='+encodeURIComponent(d.token)+'; domain=.smithapprovesme.com; path=/; max-age=2592000; secure; samesite=Lax';reveal()}else{er.textContent='Wrong username or password.';b.disabled=false;b.textContent='Sign in'}}).catch(function(){er.textContent='Could not reach the server. Try again.';b.disabled=false;b.textContent='Sign in'})})})();</script>
+
+<header class="app-header">
+  <div class="brand-mark">∞</div>
+  <div><div class="eyebrow">IDD Prospecting</div><div class="htitle">Business Call Block</div></div>
+  <div class="counts"><b id="cRemain">—</b><span>scored &amp; ready</span></div>
+</header>
+
+<div class="wrap">
+  <div class="progress">
+    <div class="ptrack"><div class="pfill" id="pfill"></div></div>
+    <div class="ptext" id="ptext">0 of 40 today</div>
+  </div>
+  <div class="filters">
+    <div><label for="fNiche">Industry</label><select id="fNiche">
+      <option value="">All industries</option>
+      <option value="roofing" selected>Roofing</option><option value="hvac">HVAC</option><option value="plumbing">Plumbing</option>
+      <option value="electrical">Electrical</option><option value="landscaping">Landscaping</option><option value="auto-repair">Auto repair</option>
+      <option value="auto-detailing">Auto detailing</option><option value="dental">Dental</option><option value="med-spa">Med spa</option>
+      <option value="insurance">Insurance</option><option value="property-management">Property mgmt</option>
+    </select></div>
+    <div><label for="fState">State</label><select id="fState"><option value="CO" selected>Colorado</option><option value="AZ">Arizona</option><option value="">All</option></select></div>
+    <div><label for="fPitch">Sort by</label><select id="fPitch"><option value="both" selected>Both</option><option value="ai">AI need</option><option value="apparel">Apparel</option></select></div>
+    <div class="stats" id="stats">Loading counts…</div>
+  </div>
+  <details class="playbook">
+    <summary>📓 Roofer script &amp; pushback playbook</summary>
+    <div class="pb">
+      <div class="pblbl">Opener (15 seconds)</div>
+      <div class="say">"Hi, this is Scott with Infinity Digital, here in Westminster. Quick question and I'll get out of your way &mdash; when a storm rolls through and the phones blow up, what happens to the calls you can't pick up while your guys are on a roof?"</div>
+      <div class="pblbl" style="margin-top:16px">Then do the math with them</div>
+      <div class="say">"What's an average job worth to you? ... So if three calls a week go to voicemail and the homeowner just calls the next roofer, that's real money walking out the door."</div>
+      <div class="pblbl" style="margin-top:16px">The demo (the whole point of the call)</div>
+      <div class="say">"We set up an AI receptionist named Ava. She answers every call 24/7, gets the address and the damage, books the inspection, and texts you the details. Don't take my word for it &mdash; can I give you the number so you can call her yourself? Then let's grab 15 minutes this week and I'll show you what it'd sound like for your company."</div>
+      <div class="pblbl" style="margin-top:16px">Bridge (only if it fits the card's talking points)</div>
+      <div class="obj">
+        <div class="q">Website gaps (no booking, no chat, dated site)</div>
+        <div class="a">"I also took a look at your site &mdash; I can put together a free mockup of what it'd look like with online booking. No cost to look."</div>
+        <div class="q">Hiring / fleet / big crew</div>
+        <div class="a">"Looks like you're growing &mdash; we also do branded crew shirts, hoodies and hats. Crews in branded gear on a roof is free advertising to the whole street."</div>
+      </div>
+      <div class="pblbl" style="margin-top:16px">Pushback</div>
+      <div class="obj">
+        <div class="q">"We already have an answering service."</div>
+        <div class="a">"Good &mdash; does it book the inspection, or just take a message? Call Ava and compare. If yours is better, keep it."</div>
+        <div class="q">"I answer my own phone."</div>
+        <div class="a">"That's great. What about when you're on a roof, or at 9pm? Ava only picks up the ones you miss."</div>
+        <div class="q">"How much is it?"</div>
+        <div class="a">"Depends on call volume &mdash; that's what the 15 minutes is for. I'd rather show you first so you can decide if it's worth anything."</div>
+        <div class="q">"Send me an email."</div>
+        <div class="a">"Happy to. What's the best email? And so it's not just another email &mdash; can I put 15 minutes on the calendar for Thursday?" Then mark <b>Call back</b>.</div>
+        <div class="q">"Not interested."</div>
+        <div class="a">"No problem at all &mdash; thanks for the time." Mark <b>Not interested</b>. If they say don't call again, mark <b>DNC</b>.</div>
+      </div>
+      <div class="pblbl" style="margin-top:16px">Gatekeeper</div>
+      <div class="obj"><div class="a">"Hi, this is Scott with Infinity Digital &mdash; is the owner around? It's about the calls that come in after hours." If not: "When's the best time to catch them?" Log it with <b>Call back</b> and the date.</div></div>
+      <div class="pblbl" style="margin-top:16px">Voicemail</div>
+      <div class="say">"Hi, this is Scott with Infinity Digital in Westminster. I've got a quick idea on catching the calls you miss when you're on a job. Give me a call back at [your number]. Thanks."</div>
+      <div class="pblbl" style="margin-top:16px">Rules</div>
+      <div class="obj"><div class="a">No cold texts to these numbers &mdash; calls only (TCPA). Never mention the mortgage side. No promises on rankings, revenue or "guaranteed" results. If they say stop, mark DNC on the spot.</div></div>
+    </div>
+  </details>
+  <div id="list"><div class="loading">Loading businesses…</div></div>
+</div>
+
+<div class="toast" id="toast">Saved</div>
+
+<div class="coachbar"><div class="cb">
+  <div id="ans"><button id="ansX" type="button" aria-label="Close">×</button><div id="ansT"></div></div>
+  <div class="cb-eyebrow">Ask the Coach · IDD business calls</div>
+  <div class="crow"><input id="cq" placeholder="What did the owner just say?" autocomplete="off"><button id="cask">Ask</button></div>
+</div></div>
+
+<script>
+var API="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/business-calls";
+var K="sr-coach-7f3a91c8b2"; // coach only
+function gateTok(){var m=document.cookie.match(/(?:^|; )sr_gate=([^;]*)/);return m?decodeURIComponent(m[1]):"";}
+function authH(extra){var h={"X-Gate":gateTok()};if(extra)for(var k in extra)h[k]=extra[k];return h;}
+var GOAL=40;
+var listEl=document.getElementById('list'),toast=document.getElementById('toast');
+var today=new Date().toLocaleDateString('en-CA',{timeZone:'America/Denver'});
+var doneToday=0; try{var s=JSON.parse(localStorage.getItem('bizcalls_done')||'{}'); if(s.date===today) doneToday=s.n||0;}catch(e){}
+function saveDone(){try{localStorage.setItem('bizcalls_done',JSON.stringify({date:today,n:doneToday}));}catch(e){}}
+var fN=document.getElementById('fNiche'),fS=document.getElementById('fState'),fP=document.getElementById('fPitch');
+try{var f=JSON.parse(localStorage.getItem('bizcalls_filters')||'null');if(f){fN.value=f.n;fS.value=f.s;fP.value=f.p;}}catch(e){}
+[fN,fS,fP].forEach(function(x){x.onchange=function(){try{localStorage.setItem('bizcalls_filters',JSON.stringify({n:fN.value,s:fS.value,p:fP.value}));}catch(e){}load();};});
+function flash(m){toast.textContent=m;toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){toast.classList.remove('show')},1400);}
+function updProgress(){document.getElementById('pfill').style.width=Math.min(doneToday/GOAL*100,100)+'%';document.getElementById('ptext').textContent=doneToday+' of '+GOAL+' today';}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtPhone(p){var d=String(p||'').replace(/\D/g,'');if(d.length===11&&d[0]==='1')d=d.slice(1);return d.length===10?'('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6):(p||'');}
+function niceNiche(n){return String(n||'').replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});}
+function chip(label,v){if(v==null)return '';var c=v>=60?'hot':v>=30?'warm':'';return '<span class="chip '+c+'">'+label+' '+v+'</span>';}
+// Talking points built from the website scan.
+function points(c){
+  var a=c.site_audit||{},out=[],yr=new Date().getFullYear();
+  if(a.unreadable||!c.website){out.push(c.website?'Their website would not load for our scanner — ask if they know it\'s down or slow.':'No website found — lead with a simple site + Ava.');}
+  if(a.h247&&!a.chat)out.push('Advertises 24/7 / emergency service but nobody (no chat, no AI) catches after-hours calls → <b>Ava pitch</b>.');
+  else if(!a.chat&&!a.text&&c.website)out.push('No chat or text on the site — every lead has to call and hope someone picks up.');
+  if(a.phone_only)out.push('Phone is the only way to reach them — missed call = lost job.');
+  if(c.website&&!a.booking)out.push('No online booking — offer the free site mockup with "book an inspection".');
+  if(c.website&&a.mobile===false)out.push('Site isn\'t mobile-friendly — most homeowners search on their phone.');
+  if(c.website&&a.https===false)out.push('Site isn\'t secure (no https) — browsers flag it "Not secure".');
+  if(a.copyright&&a.copyright<yr-1)out.push('Footer says © '+a.copyright+' — site looks dated.');
+  if(a.builder)out.push('Built on '+esc(a.builder)+' — easy to rebuild quickly.');
+  if(c.reviews!=null&&c.reviews<25)out.push('Only '+c.reviews+' Google reviews — Ava can text a review request after every job.');
+  var ap=[];
+  if(a.hiring)ap.push('hiring');if(a.fleet)ap.push('trucks/fleet');if(a.team)ap.push('team page');if(a.community)ap.push('community work');if(a.events)ap.push('events');if(a.merch)ap.push('already sells merch');
+  if(ap.length)out.push('Apparel angle: '+ap.join(', ')+' → crew shirts / hoodies / hats.');
+  var since=a.since||(a.years_claim?yr-a.years_claim:null);
+  if(since&&since<yr){var y=yr-since;if(y%5===0||y>=10)out.push('In business since '+since+' ('+y+' yrs) — anniversary gear idea.');}
+  return out;
+}
+function card(c){
+  var el=document.createElement('div');el.className='card';el._c=c;
+  var p=String(c.phone||'').replace(/[^\d+]/g,'');
+  var tags='<span class="tag">'+esc(niceNiche(c.niche))+'</span> <span class="tag">'+esc((c.city||'')+(c.state?', '+c.state:''))+'</span>'+(c.is_recall?' <span class="tag recall">Call back'+(c.call_status?' · '+esc(c.call_status.replace(/_/g,' ')):'')+'</span>':'');
+  var meta=[];
+  if(c.rating)meta.push('★ '+c.rating+(c.reviews!=null?' ('+c.reviews+' reviews)':''));
+  if(c.website)meta.push('<a href="'+esc(/^https?:/i.test(c.website)?c.website:'https://'+c.website)+'" target="_blank" rel="noopener">'+esc(String(c.website).replace(/^https?:\/\/(www\.)?/i,'').replace(/\/$/,''))+'</a>');
+  if(c.email)meta.push(esc(c.email));
+  if(c.call_count)meta.push('Called '+c.call_count+'×');
+  var tp=points(c);
+  var tomorrow=new Date(Date.now()+3*864e5).toLocaleDateString('en-CA',{timeZone:'America/Denver'});
+  el.innerHTML='<h3 class="aname">'+esc(c.name)+'</h3>'+tags+
+    '<div class="meta">'+meta.join(' · ')+'</div>'+
+    '<div class="chips">'+chip('AI need',c.site_need_score)+chip('Apparel',c.apparel_score)+'</div>'+
+    '<div class="phone">'+esc(fmtPhone(c.phone))+'</div>'+
+    (tp.length?'<div class="tps"><div class="priorlbl">Talking points</div><ul><li>'+tp.join('</li><li>')+'</li></ul></div>':'')+
+    (c.notes?'<div class="prior"><div class="priorlbl">Earlier notes</div>'+esc(c.notes)+'</div>':'')+
+    '<textarea class="note" placeholder="Notes — who you talked to, avg job value, best time…"></textarea>'+
+    '<div class="acts" style="margin-top:10px"><a class="call" href="tel:'+esc(p)+'">📞 Call</a><button class="hotbtn" data-a="interested">🔥 Interested</button></div>'+
+    '<div class="row3"><button class="savenote" data-a="save_note">📝 Save note</button><button class="talked" data-a="talked">💬 Talked</button><button class="na" data-a="voicemail">📼 Voicemail</button></div>'+
+    '<div class="fuwrap"><input type="date" class="fudate" value="'+tomorrow+'"><button class="fup" data-a="follow_up">🔁 Call back</button></div>'+
+    '<div class="row3"><button class="na" data-a="no_answer">No answer</button><button class="nope" data-a="not_interested">Not interested</button><button class="skip" data-a="skip">Skip</button></div>'+
+    '<div class="row4"><button class="skip" data-a="wrong_number">Wrong #</button><button class="dnc" data-a="dnc">⛔ Do not call</button></div>';
+  el.querySelectorAll('button[data-a]').forEach(function(b){b.onclick=function(){act(c.id,b.getAttribute('data-a'),el);};});
+  return el;
+}
+function stamp(){var d=new Date();return ('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2)+'/'+String(d.getFullYear()).slice(-2);}
+function showSaved(el,note){
+  var box=el.querySelector('.prior');
+  if(!box){box=document.createElement('div');box.className='prior';box.innerHTML='<div class="priorlbl">Earlier notes</div>';el.insertBefore(box,el.querySelector('.note'));}
+  box.appendChild(document.createTextNode((box.childNodes.length>1?'\n':'')+stamp()+': '+note));box.scrollTop=box.scrollHeight;
+}
+var MSG={interested:'🔥 Logged + sent to GHL',talked:'Call logged',follow_up:'Call back scheduled',no_answer:'Marked no answer',voicemail:'Voicemail logged',not_interested:'Marked not interested',wrong_number:'Marked wrong number',dnc:'Do not call — removed',skip:'Skipped till tomorrow'};
+function act(id,action,el){
+  var ta=el.querySelector('.note'),note=(ta&&ta.value||'').trim(),fu=el.querySelector('.fudate');
+  if(action==='save_note'&&!note){flash('Type a note first');if(ta)ta.focus();return;}
+  if(action==='dnc'&&!confirm('Mark as Do Not Call? They will never show up again.'))return;
+  var btns=el.querySelectorAll('button,a');btns.forEach(function(x){x.style.pointerEvents='none';});
+  if(action!=='save_note')el.classList.add('done');
+  var body={id:id,action:action,notes:note};
+  if(action==='follow_up'&&fu&&fu.value)body.follow_up=fu.value;
+  fetch(API,{method:'POST',headers:authH({'Content-Type':'application/json'}),body:JSON.stringify(body)})
+    .then(function(r){return r.json()}).then(function(d){
+      if(!d||!d.ok){flash('Save failed — try again');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});return;}
+      if(action==='save_note'){showSaved(el,note);ta.value='';btns.forEach(function(x){x.style.pointerEvents='';});flash(d.ghl==='noted'?'Note saved + IDD CRM ✓':'Note saved ✓');return;}
+      if(action!=='skip'){doneToday++;saveDone();updProgress();}
+      flash((action==='interested'&&d.ghl!=='noted'?'🔥 Logged':MSG[action])||'Saved');
+      setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},300);
+    }).catch(function(){flash('Network error');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});});
+}
+function n(v){return (v||0).toLocaleString();}
+function load(){
+  listEl.innerHTML='<div class="loading">Loading businesses…</div>';updProgress();
+  var q='?data=1&n=20&r=10&niche='+encodeURIComponent(fN.value)+'&state='+encodeURIComponent(fS.value)+'&pitch='+fP.value;
+  fetch(API+q,{headers:authH()}).then(function(r){if(r.status===401){location.reload();throw 0;}return r.json()}).then(function(d){
+    var st=d.stats||{};
+    document.getElementById('cRemain').textContent=n(st.scored_new);
+    document.getElementById('stats').innerHTML='<b>'+n(st.scored_new)+'</b> scored &amp; ready · '+n(st.waiting_for_score)+' still being scanned · '+n(st.no_website)+' no website<br>Today: <b>'+n(st.called_today)+'</b> called · <b>'+n(st.interested)+'</b> interested (all time) · <b>'+n(st.follow_ups_due)+'</b> call-backs due';
+    if(!d.list||!d.list.length){listEl.innerHTML='<div class="empty"><h2>Nothing to call here yet</h2>No scored businesses for this filter right now. Try another industry or state — the scanner keeps adding more.</div>';return;}
+    listEl.innerHTML='';
+    d.list.forEach(function(c){listEl.appendChild(card(c));});
+    var h=document.createElement('div');h.className='hint';
+    h.innerHTML='Highest scores come first; green "Call back" tags are follow-ups that are due. <b>Interested</b>, <b>Call back</b> and <b>Talked</b> (with a note) create the contact in the IDD CRM (never the mortgage CRM), tagged <i>IDD prospect</i>. No-answers and voicemails come back in 2 days (max 3 tries). <b>Skip</b> brings them back tomorrow. Calls only — no cold texts.';
+    listEl.appendChild(h);
+    var more=document.createElement('div');more.style.textAlign='center';more.innerHTML='<button class="bigbtn">Load next batch</button>';more.firstChild.onclick=load;listEl.appendChild(more);
+  }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Refresh and try again.</div>';});
+}
+document.addEventListener('click',function(e){var s=e.target.closest('.say');if(s){var t=s.innerText.replace('⧉','').trim();if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){flash('Copied')},function(){});}}});
+
+var SCRIPT_API="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/script";
+var ansEl=document.getElementById('ans'),ansT=document.getElementById('ansT'),cq=document.getElementById('cq'),cask=document.getElementById('cask');
+function showAns(t,err){ansT.textContent=t;ansEl.className=err?'err':'';ansEl.style.display='block';ansEl.scrollTop=0;}
+document.getElementById('ansX').onclick=function(){ansEl.style.display='none';cq.value='';};
+function askCoach(){var q=cq.value.trim();if(!q)return;showAns('Thinking…',false);cask.disabled=true;
+  fetch(SCRIPT_API+'?ask='+encodeURIComponent(q)+'&k='+K+'&ctx=business').then(function(r){return r.json()}).then(function(d){showAns(d.answer||'No answer.',false)}).catch(function(){showAns('Could not reach the coach. Try again.',true)}).finally(function(){cask.disabled=false});}
+cask.onclick=askCoach;
+cq.addEventListener('keydown',function(e){if(e.key==='Enter')askCoach();});
+load();
+</script>
+</body>
+</html>
