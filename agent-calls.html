@@ -103,7 +103,7 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
     <button type="submit" id="srBtn" style="width:100%;background:#0b2138;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;font-size:15px;cursor:pointer">Sign in</button>
   </form>
 </div>
-<script>(function(){var GATE="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/gate";function ck(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):''}var g=document.getElementById('srGate');function reveal(){if(g&&g.parentNode)g.parentNode.removeChild(g)}var t=ck('sr_gate');if(t){fetch(GATE+'?verify='+encodeURIComponent(t)).then(function(r){return r.json()}).then(function(d){if(d&&d.ok)reveal()}).catch(function(){})}document.getElementById('srGateForm').addEventListener('submit',function(e){e.preventDefault();var u=document.getElementById('srU').value.trim(),p=document.getElementById('srP').value,b=document.getElementById('srBtn'),er=document.getElementById('srErr');er.textContent='';b.disabled=true;b.textContent='Signing in…';fetch(GATE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u:u,p:p})}).then(function(r){return r.json()}).then(function(d){if(d&&d.ok){document.cookie='sr_gate='+encodeURIComponent(d.token)+'; domain=.smithapprovesme.com; path=/; max-age=2592000; secure; samesite=Lax';reveal()}else{er.textContent='Wrong username or password.';b.disabled=false;b.textContent='Sign in'}}).catch(function(){er.textContent='Could not reach the server. Try again.';b.disabled=false;b.textContent='Sign in'})})})();</script>
+<script>(function(){var GATE="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/gate";function ck(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):''}var g=document.getElementById('srGate');function reveal(){if(g&&g.parentNode)g.parentNode.removeChild(g);document.dispatchEvent(new Event('agent-gate-ready'));}var t=ck('sr_gate');if(t){fetch(GATE+'?verify='+encodeURIComponent(t)).then(function(r){return r.json()}).then(function(d){if(d&&d.ok)reveal()}).catch(function(){})}document.getElementById('srGateForm').addEventListener('submit',function(e){e.preventDefault();var u=document.getElementById('srU').value.trim(),p=document.getElementById('srP').value,b=document.getElementById('srBtn'),er=document.getElementById('srErr');er.textContent='';b.disabled=true;b.textContent='Signing in…';fetch(GATE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u:u,p:p})}).then(function(r){return r.json()}).then(function(d){if(d&&d.ok){document.cookie='sr_gate='+encodeURIComponent(d.token)+'; domain=.smithapprovesme.com; path=/; max-age=2592000; secure; samesite=Lax';reveal()}else{er.textContent='Wrong username or password.';b.disabled=false;b.textContent='Sign in'}}).catch(function(){er.textContent='Could not reach the server. Try again.';b.disabled=false;b.textContent='Sign in'})})})();</script>
 
 <header class="app-header">
   <div class="brand-mark">S</div>
@@ -112,6 +112,14 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 </header>
 
 <div class="wrap">
+  <details class="progress" open>
+    <summary>Outreach activity</summary>
+    <p><label>From <input type="date" id="activityFrom"></label>
+    <label>Through <input type="date" id="activityTo"></label>
+    <button type="button" id="activityRefresh">Refresh</button></p>
+    <div id="activityStats" role="status">Sign in to see activity.</div>
+    <p class="hint">Dates use Mountain Time. First calls and texts use the contact's recorded history. Phone activity is confirmed by you. GHL texts count when accepted by GHL.</p>
+  </details>
   <div class="progress">
     <div class="ptrack"><div class="pfill" id="pfill"></div></div>
     <div class="ptext" id="ptext">0 of 20 today</div>
@@ -182,8 +190,37 @@ var REPORT="https://partners.smithapprovesme.com";           // The Smith Report
 var GOAL=20;          // daily target: 10 recalls + 10 new
 var listEl=document.getElementById('list'),toast=document.getElementById('toast');
 var today=new Date().toISOString().slice(0,10);
-var doneToday=0; try{var s=JSON.parse(localStorage.getItem('agentcalls_done')||'{}'); if(s.date===today) doneToday=s.n||0;}catch(e){}
-function saveDone(){try{localStorage.setItem('agentcalls_done',JSON.stringify({date:today,n:doneToday}));}catch(e){}}
+var doneToday=0;
+function denverDate(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Denver',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
+function activityRequest(payload){
+  var session=(document.cookie.match(/(?:^|; )sr_gate=([^;]*)/)||[])[1]||'';
+  return fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(Object.assign({k:K,activity_version:1,session:session},payload))
+  }).then(function(response){return response.json();});
+}
+var activityFrom=document.getElementById('activityFrom'), activityTo=document.getElementById('activityTo');
+activityFrom.value=activityTo.value=denverDate();
+var reportVersion=0;
+async function refreshActivity(){
+  var version=++reportVersion;
+  var status=document.getElementById('activityStats'), from=activityFrom.value, to=activityTo.value;
+  try{
+    var results=await Promise.all([
+      activityRequest({action:'activity_report',from:from,to:to}),
+      from===denverDate()&&to===from?null:activityRequest({action:'activity_report',from:denverDate(),to:denverDate()})
+    ]);
+    if(version!==reportVersion)return;
+    var selected=results[0], daily=results[1]||selected;
+    if(daily.ok){doneToday=daily.report.calls;updProgress();}
+    if(!selected.ok){status.textContent=selected.error||'Activity report unavailable.';return;}
+    var a=selected.report;
+    status.textContent=a.calls+' calls · '+a.unique_called+' unique contacts · '+a.first_calls+' first calls · '+a.recalls+' recalls. '+
+      a.texts+' texts · '+a.unique_texted+' unique contacts · '+a.first_texts+' first texts · '+a.repeat_texts+' repeat texts. '+
+      a.phone_texts+' phone-confirmed · '+a.ghl_texts+' GHL accepted · '+a.unconfirmed_texts+' unconfirmed · '+a.failed_texts+' failed.';
+  }catch(e){if(version===reportVersion)status.textContent='Activity report unavailable. Refresh to retry.';}
+}
+document.getElementById('activityRefresh').onclick=refreshActivity;
+document.addEventListener('agent-gate-ready',refreshActivity);
 function flash(m){toast.textContent=m;toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){toast.classList.remove('show')},1400);}
 function updProgress(){document.getElementById('pfill').style.width=Math.min(doneToday/GOAL*100,100)+'%';document.getElementById('ptext').textContent=doneToday+' of '+GOAL+' today';}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -231,6 +268,8 @@ function card(c){
       '<button class="text" data-send="1">💬 Text via GHL</button>'+
     '</div>'+
     '<a class="text2" href="sms:'+tel+'">📲 Text from my phone (Messages)</a>'+
+    '<div class="row2"><button data-log="log_call">Confirm call made</button>'+
+      '<button data-log="log_phone_text">Confirm phone text sent</button></div>'+
     prior+
     '<textarea class="note" placeholder="Notes — what they said, callback time, brokerage…"></textarea>'+
     '<div class="row3">'+
@@ -239,37 +278,60 @@ function card(c){
       '<button class="fup" data-a="follow_up">Call back</button>'+
     '</div>'+
     '<div class="row2">'+
-      '<button class="worked" data-a="worked">Done — texted</button>'+
+      '<button class="worked" data-a="finish">Finish card</button>'+
       '<button class="na" data-a="no_answer">No answer</button>'+
       '<button class="skip" data-a="skip">Skip</button>'+
     '</div>';
   el.querySelectorAll('button').forEach(function(b){
     if(b.dataset.send){ b.onclick=function(){sendReport(c,el,b);}; }
+    else if(b.dataset.log){b.onclick=function(){recordActivity(c,b);};}
     else { b.onclick=function(){act(c.id,b.dataset.a,el);}; }
   });
   // Build the Messages link at tap time so it uses whichever text is picked right now.
   var t2=el.querySelector('.text2');
-  t2.onclick=function(){t2.href='sms:'+tel+'?&body='+encodeURIComponent(msgFor(c));};
+  el.querySelector('.call').onclick=function(){
+    var button=el.querySelector('[data-log="log_call"]');
+    if(!button.dataset.request)button.disabled=false;
+  };
+  t2.onclick=function(){
+    t2.href='sms:'+tel+'?&body='+encodeURIComponent(msgFor(c));
+    var button=el.querySelector('[data-log="log_phone_text"]');
+    if(!button.dataset.request)button.disabled=false;
+  };
   return el;
+}
+async function recordActivity(c,btn){
+  btn.disabled=true;
+  btn.dataset.request=btn.dataset.request||crypto.randomUUID();
+  var recorded=false;
+  try{
+    var d=await activityRequest({id:c.id,action:btn.dataset.log,request_id:btn.dataset.request});
+    if(!d.ok)throw new Error(d.error||'Activity could not be recorded.');
+    recorded=true;
+    btn.dataset.request='';
+    flash(btn.dataset.log==='log_call'?'Call recorded':'Phone text recorded');
+    refreshActivity();
+  }catch(e){flash(e.message||'Activity could not be recorded. Retry the same action.');}
+  finally{btn.disabled=recorded;}
 }
 function sendReport(c,el,btn){
   var note=(el.querySelector('.note')||{}).value||'';
-  var orig=btn.textContent; btn.textContent='Sending…'; btn.style.pointerEvents='none';
-  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:c.id,action:'send_text',notes:note,message:msgFor(c),label:labelFor(c)})})
-    .then(function(r){return r.json()}).then(function(d){
+  var orig=btn.textContent; btn.textContent='Sending…'; btn.disabled=true;
+  btn.dataset.request=btn.dataset.request||crypto.randomUUID();
+  activityRequest({id:c.id,action:'send_text',request_id:btn.dataset.request,notes:note,message:msgFor(c),label:labelFor(c)})
+    .then(function(d){
       if(d&&d.ok&&d.sent){
-        // Campaign texts are not calls -- they don't count toward the daily goal.
-        if(!c.campaign_message){doneToday++;saveDone();updProgress();}
+        refreshActivity();
         flash('Text sent via GHL ✓');
         el.classList.add('done');el.querySelectorAll('button,a').forEach(function(x){x.style.pointerEvents='none';});
         setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},300);
       } else {
-        var reason=(d&&d.reason)?d.reason:'GHL could not send';
-        flash(reason+' — opening Messages');
-        btn.textContent=orig;btn.style.pointerEvents='';
-        try{window.location.href='sms:+1'+c.phone10+'?&body='+encodeURIComponent(msgFor(c));}catch(e){}
+        flash(d.reason||d.error||(d.uncertain?'Check GHL before trying again.':'GHL could not send.'));
+        if(!d.uncertain)btn.dataset.request='';
+        btn.textContent=orig;btn.disabled=false;
+        refreshActivity();
       }
-    }).catch(function(){flash('Network error');btn.textContent=orig;btn.style.pointerEvents='';});
+    }).catch(function(){flash('Connection lost. Check GHL or retry this same request.');btn.textContent=orig;btn.disabled=false;});
 }
 function stamp(){var d=new Date();return ('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2)+'/'+String(d.getFullYear()).slice(-2);}
 // Append a just-saved note into the card's "Earlier notes" block so Scott sees it stick.
@@ -291,18 +353,17 @@ function act(id,action,el){
   if(action==='save_note'&&!note){flash('Type a note first');if(ta)ta.focus();return;}
   btns.forEach(function(x){x.style.pointerEvents='none';});
   if(!keeps)el.classList.add('done');
-  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:id,action:action,notes:note,label:action==='worked'?labelFor(el._c):''})})
-    .then(function(r){return r.json()}).then(function(d){
+  activityRequest({id:id,action:action,notes:note}).then(function(d){
       if(!d||!d.ok){flash('Save failed — try again');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});return;}
       if(keeps){
         if(note){showSaved(el,note);ta.value='';}
         btns.forEach(function(x){x.style.pointerEvents='';});
         if(action==='save_note'){flash('Note saved to GHL ✓');return;}
-        flash(action==='talked'?'Call logged — stays in your list':'Call back logged — stays in your list');
+        flash(action==='talked'?'Conversation saved':'Callback noted');
         setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},500);
         return;
       }
-      if(action==='worked'){if(!(el._c&&el._c.campaign_message)){doneToday++;saveDone();updProgress();}flash('Logged ✓');}
+      if(action==='finish'){flash('Card finished');}
       else if(action==='no_answer'){flash('Marked no-answer');}
       else{flash('Skipped');}
       setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},260);
@@ -329,7 +390,7 @@ function load(){
       cb.innerHTML='<b>'+d.campaign_remaining+' campaign texts</b> are queued at the bottom of this list (purple tag). Those are text-only — no call needed — and they don\'t count toward your '+GOAL+'.';
       listEl.appendChild(cb);
     }
-    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number). <b>Save note</b> writes to GHL and leaves the card open. <b>Talked</b> and <b>Call back</b> log the call and keep them in rotation. <b>Done — texted</b>, <b>No answer</b> and <b>Skip</b> clear them from today. Do 20 a day: up to 10 recalls (green tag) + 10 new.';
+    var h=document.createElement('div');h.className='hint';h.innerHTML='After dialing, tap <b>Confirm call made</b>. After sending from Messages, tap <b>Confirm phone text sent</b>. GHL texts are recorded automatically when accepted.';
     listEl.appendChild(h);
   }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
 }
