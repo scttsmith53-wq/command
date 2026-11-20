@@ -87,6 +87,12 @@ body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),t
 .picker .pv{margin-top:9px;font-size:13.5px;line-height:1.45;color:#3a4653;white-space:pre-wrap}
 .tag.recall{color:var(--green);border-color:#bcd9c2;background:var(--green-soft)}
 .tag.camp{color:#6b3fa0;border-color:#d9c9ef;background:#f4eefc}
+.closings{background:#fff;border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:16px;padding:14px 14px 4px;margin:0 0 16px}
+.sec-title{font:600 24px/1.15 Georgia,serif;color:var(--navy);margin:0 0 4px}
+.sec-note{font-size:12.5px;color:var(--muted);margin:0 0 2px;line-height:1.4}
+.dayh{margin:14px 2px 0;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.bro{margin-top:3px;font-size:14px;font-weight:700;color:#3a4653}
+.prior.msg{max-height:none}
 </style>
 </head>
 <body>
@@ -198,7 +204,9 @@ var tplKey='flyer'; try{var sk=localStorage.getItem('agentcalls_tpl'); if(sk&&TE
 // NEW agents (never called) always get this intro text.
 var NEW_TEXT={label:'Still here intro',text:"Hi {name}, this is Scott with Citywide Mortgage. I know a lot of loan officers are falling by the wayside, but I wanted to let you know I'm still here and would love to help with any deals you have on your desk.\n\nWe also have a great 10% down program for investment properties, so let me know if you have anyone it would be useful for.\n\n"+REPORT+"\nhttps://www.citywidehm.com/loan-officers/scott-smith-2244351"};
 // Campaign rows carry their own text on the queue row and ignore the dropdown.
-function campLabel(c){var s=(c&&c.campaign)||'';return /^weekend_preapproval/.test(s)?'Weekend pre-approvals':(s||'Campaign');}
+// closings_congrats_YYYYMMDD is grouped into the Closings section; the tag stays "Closings".
+function isClosings(c){return /^closings_congrats_/.test((c&&c.campaign)||'');}
+function campLabel(c){var s=(c&&c.campaign)||'';return /^weekend_preapproval/.test(s)?'Weekend pre-approvals':(/^closings_congrats_/.test(s)?'Closings':(s||'Campaign'));}
 function tplFor(c){
   if(c&&c.campaign_message) return {key:'campaign',label:campLabel(c),text:c.campaign_message};
   return (c&&c.is_recall)?curTpl():NEW_TEXT;
@@ -216,14 +224,17 @@ function msgFor(c){return tplFor(c).text.replace(/\{name\}/g,(c&&c.first_name)||
 })();
 function card(c){
   var name=cleanName(c), tel='+1'+c.phone10;
+  var closing=isClosings(c);
   var retry=c.campaign_message?'<span class="tag camp">'+esc(campLabel(c))+' · text only</span>'
     :(c.is_recall?'<span class="tag recall">Recall · called last week</span>'
     :(c.calls>0?'<span class="tag retry">Call '+(c.calls+1)+' · '+(c.texted?'already texted':'no answer yet')+'</span>':''));
   var prior=(c.notes&&String(c.notes).trim())
-    ? '<div class="prior"><div class="priorlbl">Earlier notes</div>'+esc(String(c.notes).trim())+'</div>' : '';
+    ? '<div class="prior"><div class="priorlbl">'+(closing?'Closing':'Earlier notes')+'</div>'+esc(String(c.notes).trim())+'</div>' : '';
+  var bro=(closing&&c.brokerage)?'<div class="bro">'+esc(c.brokerage)+'</div>':'';
+  var finished=closing?'<div class="prior msg"><div class="priorlbl">Text</div>'+esc(msgFor(c))+'</div>':'';
   var el=document.createElement('div');el.className='card';el.dataset.id=c.id;el._c=c;
   el.innerHTML=
-    '<h3 class="aname">'+esc(name)+'</h3>'+retry+
+    '<h3 class="aname">'+esc(name)+'</h3>'+retry+bro+
     '<div class="phone">'+esc(c.phone_display||c.phone10)+'</div>'+
     '<div class="hint" style="margin:-8px 0 10px">Text: <b class="sendsLbl">'+esc(labelFor(c))+'</b></div>'+
     '<div class="acts">'+
@@ -232,6 +243,7 @@ function card(c){
     '</div>'+
     '<a class="text2" href="sms:'+tel+'">📲 Text from my phone (Messages)</a>'+
     prior+
+    finished+
     '<textarea class="note" placeholder="Notes — what they said, callback time, brokerage…"></textarea>'+
     '<div class="row3">'+
       '<button class="savenote" data-a="save_note">💾 Save note</button>'+
@@ -274,11 +286,11 @@ function sendReport(c,el,btn){
 function stamp(){var d=new Date();return ('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2)+'/'+String(d.getFullYear()).slice(-2);}
 // Append a just-saved note into the card's "Earlier notes" block so Scott sees it stick.
 function showSaved(el,note){
-  var box=el.querySelector('.prior');
+  var box=el.querySelector('.prior:not(.msg)');
   if(!box){
     box=document.createElement('div');box.className='prior';
     box.innerHTML='<div class="priorlbl">Earlier notes</div>';
-    el.insertBefore(box,el.querySelector('.note'));
+    el.insertBefore(box,el.querySelector('.prior.msg')||el.querySelector('.note'));
   }
   box.appendChild(document.createTextNode((box.childNodes.length>1?'\n':'')+stamp()+': '+note));
   box.scrollTop=box.scrollHeight;
@@ -308,29 +320,78 @@ function act(id,action,el){
       setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},260);
     }).catch(function(){flash('Network error');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});});
 }
+function closingsDayKey(c){
+  var m=/^closings_congrats_(\d{8})/.exec((c&&c.campaign)||'');
+  return m?m[1]:'';
+}
+function formatClosingsDay(key){
+  if(!/^\d{8}$/.test(key)) return 'Undated';
+  var mo=+key.slice(4,6), d=+key.slice(6,8), y=+key.slice(0,4);
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  if(mo<1||mo>12||d<1||d>31) return key;
+  return months[mo-1]+' '+d+', '+y;
+}
+// Closings stay on the same card as every other campaign. Days are newest first.
+function renderClosings(rows){
+  if(!rows||!rows.length) return null;
+  var by={};
+  rows.forEach(function(c){var k=closingsDayKey(c);(by[k]=by[k]||[]).push(c);});
+  var keys=Object.keys(by).sort(function(a,b){
+    if(a===b) return 0;
+    if(!a) return 1;
+    if(!b) return -1;
+    return a<b?1:-1;
+  });
+  var sec=document.createElement('section');
+  sec.className='closings';
+  sec.id='closings';
+  var head=document.createElement('div');
+  head.innerHTML='<h2 class="sec-title">Closings</h2><div class="sec-note">Text only. Outside today\'s '+GOAL+'.</div>';
+  sec.appendChild(head);
+  keys.forEach(function(k){
+    var h=document.createElement('h3');
+    h.className='dayh';
+    h.textContent=formatClosingsDay(k);
+    sec.appendChild(h);
+    by[k].forEach(function(c){sec.appendChild(card(c));});
+  });
+  return sec;
+}
 function load(){
   listEl.innerHTML='<div class="loading">Loading your agents…</div>';
   fetch(API+'?data=1&k='+K+'&n=20&r=10').then(function(r){return r.json()}).then(function(d){
     document.getElementById('cRemain').textContent=(d.active_remaining!=null?d.active_remaining.toLocaleString():'—');
     document.getElementById('recallCount').textContent=d.recall_remaining?'· '+d.recall_remaining+' recalls left':'';
     updProgress();
-    if(!d.list||!d.list.length){listEl.innerHTML='<div class="empty"><h2>All caught up 🎉</h2>No more active agents in the queue.</div>';return;}
+    var all=(d.list&&d.list.length)?d.list:[];
+    var closings=[], rest=[];
+    all.forEach(function(c){(isClosings(c)?closings:rest).push(c);});
+    if(!closings.length&&!rest.length){listEl.innerHTML='<div class="empty"><h2>All caught up 🎉</h2>No more active agents in the queue.</div>';return;}
     listEl.innerHTML='';
-    if(doneToday>=GOAL){
+    var closSec=renderClosings(closings);
+    if(closSec) listEl.appendChild(closSec);
+    function paintRest(withHints){
+      rest.forEach(function(c){listEl.appendChild(card(c));});
+      if(!withHints) return;
+      var bottomN=(d.campaign_remaining||0)-closings.length;
+      if(bottomN>0){
+        var cb=document.createElement('div');cb.className='hint';
+        cb.innerHTML='<b>'+bottomN+' campaign texts</b> are queued at the bottom of this list (purple tag). Those are text-only — no call needed — and they don\'t count toward your '+GOAL+'.';
+        listEl.appendChild(cb);
+      }
+      var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number). <b>Save note</b> writes to GHL and leaves the card open. <b>Talked</b> and <b>Call back</b> log the call and keep them in rotation. <b>Done — texted</b>, <b>No answer</b> and <b>Skip</b> clear them from today. Do 20 a day: up to 10 recalls (green tag) + 10 new.';
+      listEl.appendChild(h);
+    }
+    // The daily-goal gate still covers recalls, new pulls, and every other campaign.
+    // Closings stay on screen because they are outside that 20.
+    if(rest.length&&doneToday>=GOAL){
       var b=document.createElement('div');b.className='empty';
       b.innerHTML='<h2>That’s your 20 for today ✅</h2>Nice work. You can keep going or come back tomorrow.<br><button class="bigbtn" id="more">Keep going</button>';
       listEl.appendChild(b);
-      document.getElementById('more').onclick=function(){b.remove();d.list.forEach(function(c){listEl.appendChild(card(c));});};
+      document.getElementById('more').onclick=function(){b.remove();paintRest(false);};
       return;
     }
-    d.list.forEach(function(c){listEl.appendChild(card(c));});
-    if(d.campaign_remaining){
-      var cb=document.createElement('div');cb.className='hint';
-      cb.innerHTML='<b>'+d.campaign_remaining+' campaign texts</b> are queued at the bottom of this list (purple tag). Those are text-only — no call needed — and they don\'t count toward your '+GOAL+'.';
-      listEl.appendChild(cb);
-    }
-    var h=document.createElement('div');h.className='hint';h.innerHTML='Tap <b>Call</b>, then either <b>Text via GHL</b> (sends + logs automatically) or <b>Text from my phone</b> (opens Messages so it comes from your number). <b>Save note</b> writes to GHL and leaves the card open. <b>Talked</b> and <b>Call back</b> log the call and keep them in rotation. <b>Done — texted</b>, <b>No answer</b> and <b>Skip</b> clear them from today. Do 20 a day: up to 10 recalls (green tag) + 10 new.';
-    listEl.appendChild(h);
+    if(rest.length) paintRest(true);
   }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
 }
 document.addEventListener('click',function(e){var s=e.target.closest('.say');if(s){var t=s.innerText.replace('⧉','').trim();if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){flash('Copied')},function(){});}}});
