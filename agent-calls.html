@@ -203,13 +203,24 @@ var TEMPLATES=[
 var tplKey='flyer'; try{var sk=localStorage.getItem('agentcalls_tpl'); if(sk&&TEMPLATES.some(function(t){return t.key===sk;})) tplKey=sk;}catch(e){}
 // NEW agents (never called) always get this intro text.
 var NEW_TEXT={label:'Still here intro',text:"Hi {name}, this is Scott with Citywide Mortgage. I know a lot of loan officers are falling by the wayside, but I wanted to let you know I'm still here and would love to help with any deals you have on your desk.\n\nWe also have a great 10% down program for investment properties, so let me know if you have anyone it would be useful for.\n\n"+REPORT+"\nhttps://www.citywidehm.com/loan-officers/scott-smith-2244351"};
+// One-day first-touch override; leave the normal new-agent default untouched.
+var THANKSGIVING_NEW_TEXT={label:'Thanksgiving / 2027 planning',text:"Hi {name}, this is Scott with Citywide Mortgage. Happy Thanksgiving! I’m having great conversations with my current Realtor partners about planning for 2027 and wanted to see if you had a few minutes in the next couple of weeks to share in the conversation.\n\nhttps://partners.smithapprovesme.com\nhttps://www.citywidehm.com/loan-officers/scott-smith-2244351"};
+var thanksgivingDateFmt=null;
+try {
+  thanksgivingDateFmt=new Intl.DateTimeFormat('en-US',{timeZone:'America/Denver',year:'numeric',month:'2-digit',day:'2-digit'});
+} catch(e){}
+function isThanksgivingFirstTouch(c){
+  return !!(c&&!c.is_recall&&!c.campaign&&!c.campaign_message&&!c.calls&&!c.texted&&
+    thanksgivingDateFmt&&thanksgivingDateFmt.format(new Date())==='11/24/2026');
+}
 // Campaign rows carry their own text on the queue row and ignore the dropdown.
 // closings_congrats_YYYYMMDD is grouped into the Closings section; the tag stays "Closings".
 function isClosings(c){return /^closings_congrats_/.test((c&&c.campaign)||'');}
 function campLabel(c){var s=(c&&c.campaign)||'';return /^weekend_preapproval/.test(s)?'Weekend pre-approvals':(/^closings_congrats_/.test(s)?'Closings':(s||'Campaign'));}
 function tplFor(c){
   if(c&&c.campaign_message) return {key:'campaign',label:campLabel(c),text:c.campaign_message};
-  return (c&&c.is_recall)?curTpl():NEW_TEXT;
+  if(c&&c.is_recall) return curTpl();
+  return isThanksgivingFirstTouch(c)?THANKSGIVING_NEW_TEXT:NEW_TEXT;
 }
 function labelFor(c){return tplFor(c).label;}
 function curTpl(){for(var i=0;i<TEMPLATES.length;i++){if(TEMPLATES[i].key===tplKey)return TEMPLATES[i];}return TEMPLATES[0];}
