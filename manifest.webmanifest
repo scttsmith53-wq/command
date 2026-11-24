@@ -13,6 +13,7 @@
     { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
+    { "name": "AI Bridge", "url": "/bridge.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Business Call Block", "url": "/business-calls.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Agent Call Block", "url": "/agent-calls.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
   ]

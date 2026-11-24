@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ae2026">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Command">
+<title>AI Bridge — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111214;--paper:#fffdfa;--soft:#f2efe9;--line:#d9d4ca;--muted:#666b72;--red:#ae2026;--red2:#86161b;--gold:#a77b2f;--green:#16865b;--green2:#0f6b47;--dark:#0e1116;--max:1080px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Libre Franklin',Arial,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:48px}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.wrap{width:min(var(--max),calc(100% - 36px));margin:auto}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+.utility{min-height:32px;background:var(--dark);color:#d5d7da;font-size:10px;letter-spacing:.09em;text-transform:uppercase}
+.utility .wrap{min-height:32px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.live{display:inline-flex;align-items:center;gap:8px}
+.udot{width:7px;height:7px;border-radius:50%;background:#ef4148;box-shadow:0 0 0 4px rgba(239,65,72,.16);flex:none}
+.crumb{width:min(var(--max),calc(100% - 36px));margin:14px auto 0}
+.crumb a{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--red);text-decoration:none}
+.masthead{border-bottom:4px solid var(--ink);text-align:center;padding:18px 0 16px}
+.brand-title{font:700 clamp(40px,7vw,60px)/.9 'Newsreader',Georgia,serif;letter-spacing:-.045em;margin:5px 0 0}
+.brand-sub{margin-top:9px;font-size:10px;font-weight:800;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:20px;padding-bottom:10px;margin:34px 0 16px;border-bottom:3px solid var(--ink)}
+.sec-title{font:600 clamp(26px,4vw,32px)/1 'Newsreader',Georgia,serif;margin:0}
+.sec-desc{font-size:11px;color:var(--muted);text-align:right}
+.has-items .sec-title{color:var(--red)}
+.count{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 7px;margin-left:8px;border-radius:99px;background:var(--red);color:#fff;font:800 13px/1 'Libre Franklin',Arial,sans-serif;letter-spacing:0;vertical-align:2px}
+.hero{display:flex;align-items:center;justify-content:space-between;gap:22px;background:#fff;border:1px solid var(--line);border-top:5px solid var(--ink);padding:22px;margin-top:22px}
+.hero h2{font:700 clamp(36px,6vw,48px)/.95 'Newsreader',Georgia,serif;letter-spacing:-.03em;margin:2px 0 6px}
+.hero .note{margin:0;max-width:46ch;color:var(--muted);font-size:15px}
+.sdot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:10px;vertical-align:4px;background:var(--green);box-shadow:0 0 0 5px rgba(22,134,91,.16)}
+.sdot[hidden]{display:none !important}
+.hero.running{border-top-color:var(--green)}
+.hero.paused{background:#1c1012;border-color:#3d1a1e;border-top-color:var(--red);color:#fff}
+.hero.paused .eyebrow{color:#ffb3b7}
+.hero.paused .note{color:#ead6d7}
+.hero.paused .sdot{background:#ef4148;box-shadow:0 0 0 5px rgba(239,65,72,.2)}
+.pause{appearance:none;border:0;cursor:pointer;flex:none;min-width:min(100%,240px);min-height:68px;padding:16px 26px;background:var(--red);color:#fff;font:800 18px/1 'Libre Franklin',Arial,sans-serif;letter-spacing:.01em}
+.pause:hover{background:var(--red2)}
+.pause.do-resume{background:var(--green)}
+.pause.do-resume:hover{background:var(--green2)}
+.pause:disabled{opacity:.55;cursor:default}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:16px}
+.toggle{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--red);flex:none}
+.refresh{background:var(--ink);color:#fff;border:0;min-height:42px;padding:0 16px;font:800 12px/1 'Libre Franklin',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.refresh:hover{background:#2a2d33}
+.refresh:disabled{opacity:.6;cursor:default}
+.fresh{margin-left:auto;font:500 12px/1.4 'Roboto Mono',monospace;color:var(--muted)}
+.banner{margin-top:14px;padding:12px 14px;background:#fdf2f2;border:1px solid #efc8ca;color:var(--red2);font-size:14px;font-weight:600}
+.banner[hidden]{display:none}
+.stats{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-left:0;border-top:0;background:#fff}
+.stat{padding:14px 18px;border-left:1px solid var(--line);border-top:1px solid var(--line);min-width:132px;flex:1}
+.stat b{font:600 28px/1 'Roboto Mono',monospace;display:block}
+.stat span{display:block;margin-top:6px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.empty{padding:16px 18px;border:1px dashed var(--line);background:#fff;color:var(--muted);font-size:14.5px}
+.empty.thin{margin-top:10px}
+.loading{color:var(--muted);padding:8px 0 16px;font-size:14.5px}
+.job,.wait-item{background:#fff;border:1px solid var(--line);border-top:5px solid var(--ink);padding:18px;margin:0 0 14px;scroll-margin-top:16px}
+.job.st-red,.wait-item{border-top-color:var(--red)}
+.job.st-gold{border-top-color:var(--gold)}
+.job.st-green{border-top-color:var(--green)}
+.job.is-closed{background:#fbfaf7}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:99px;padding:4px 9px;background:#fff;color:var(--ink)}
+.badge.red{color:var(--red);border-color:#efc8ca;background:#fdf2f2}
+.badge.gold{color:#8a6424;border-color:#ead7ae;background:#fbf6ec}
+.badge.green{color:var(--green);border-color:#bfe3d2;background:#f3faf6}
+.badge.muted{color:var(--muted);background:var(--soft)}
+.jtitle,.wtitle{font:600 26px/1.15 'Newsreader',Georgia,serif;margin:10px 0 6px;overflow-wrap:break-word}
+.wtitle{font-size:22px}
+.who{font:600 20px/1 'Newsreader',Georgia,serif}
+.jmeta,.taskmeta,.wt{font:500 12px/1.45 'Roboto Mono',monospace;color:var(--muted);overflow-wrap:break-word}
+.jlinks{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;font-size:13.5px;font-weight:700}
+.jlinks a{color:var(--red);text-underline-offset:2px}
+code{font:500 12px 'Roboto Mono',monospace;background:var(--soft);padding:1px 5px;overflow-wrap:anywhere}
+.task-label{margin-top:16px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.task{border:1px solid var(--line);border-left:4px solid var(--ink);background:#fff;padding:12px 14px;margin-top:10px}
+.ask{margin:8px 0 0;font-size:15px;line-height:1.45;overflow-wrap:break-word}
+.help{margin:10px 0 0;padding:4px 0 4px 14px;border-left:4px solid var(--red)}
+.helplabel{display:block;font:800 10px/1 'Libre Franklin',Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:5px}
+.help p{margin:0;font:600 18px/1.35 'Newsreader',Georgia,serif;font-style:italic;color:#2a2d33}
+.taskmeta{margin-top:8px}
+.taskmeta a{color:var(--red);font-weight:700}
+.task.stale,.wait-item.stale{background:#fdf2f2;border-color:#e7b4b7;color:#8d1b22}
+.task.stale{border-left-color:var(--red)}
+.task.stale .ask,.task.stale .who,.task.stale .taskmeta,.task.stale .taskmeta a,.wait-item.stale .ask,.wait-item.stale .who,.wait-item.stale .taskmeta{color:#8d1b22}
+.task.stale .help p,.wait-item.stale .help p{color:#8d1b22}
+.workers{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.wcard{background:#fff;border:1px solid var(--line);border-top:4px solid var(--ink);padding:14px}
+.wcard.quiet{border-top-color:var(--red);background:#fdf2f2}
+.wn{font:600 20px/1.1 'Newsreader',Georgia,serif}
+.wt{margin-top:8px}
+.wcard.quiet .wt{color:var(--red)}
+.modal{position:fixed;inset:0;z-index:80;background:rgba(14,17,22,.62);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal[hidden]{display:none !important}
+.modal-card{width:min(460px,100%);background:var(--paper);border-top:5px solid var(--ink);padding:22px 22px 18px;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+.modal-card h3{font:600 30px/1.15 'Newsreader',Georgia,serif;margin:0 0 8px}
+.modal-card p{margin:0;color:#2c3036;font-size:15.5px}
+.confirm-err{color:var(--red);font-size:13.5px;font-weight:700;margin:12px 0 0;min-height:0}
+.confirm-err:empty{display:none}
+.modal-acts{display:flex;gap:10px;margin-top:18px}
+.modal-acts button{flex:1;min-height:50px;cursor:pointer;font:800 15px/1 'Libre Franklin',Arial,sans-serif;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.modal-acts .go{color:#fff;border-color:transparent;background:var(--red)}
+.modal-acts .go.resume{background:var(--green)}
+.modal-acts button:disabled{opacity:.6;cursor:default}
+@media(max-width:720px){
+  .hero{display:block}
+  .pause{width:100%;margin-top:16px}
+  .fresh{margin-left:0;width:100%}
+  .sec-head{display:block}
+  .sec-desc{text-align:left;margin-top:6px}
+  .modal-acts{flex-direction:column}
+  .jtitle{font-size:23px}
+}
+@media(max-width:420px){
+  .wrap,.crumb{width:min(var(--max),calc(100% - 24px))}
+  .workers{grid-template-columns:1fr 1fr}
+  .stat{min-width:46%}
+}
+</style>
+</head>
+<body>
+<div id="srGate" style="position:fixed;inset:0;z-index:99999;background:#0b2138;display:flex;align-items:center;justify-content:center;font-family:Inter,Arial,sans-serif;padding:16px">
+  <form id="srGateForm" style="width:min(360px,92%);background:#fffdf9;border-radius:16px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="text-align:center;margin-bottom:18px">
+      <div style="width:46px;height:46px;border:1px solid #b89252;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;color:#b89252;font:700 21px Georgia,serif">S</div>
+      <div style="font:800 10px Inter,Arial;letter-spacing:.16em;text-transform:uppercase;color:#b89252">Smith Approves Me</div>
+      <div style="font:600 22px Georgia,serif;color:#0b2138;margin-top:4px">Private Login</div>
+    </div>
+    <input id="srU" placeholder="Username" autocomplete="username" autocapitalize="none" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;margin-bottom:10px;font-size:16px">
+    <input id="srP" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;font-size:16px">
+    <div id="srErr" style="color:#9a3f48;font-size:13px;min-height:18px;margin:6px 0"></div>
+    <button type="submit" id="srBtn" style="width:100%;background:#0b2138;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;font-size:15px;cursor:pointer">Sign in</button>
+  </form>
+</div>
+<script>window.__bridgeAuthedFlag=false;window.srBridgeAuthed=function(){window.__bridgeAuthedFlag=true;};</script>
+<script>(function(){
+  var GATE="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/gate";
+  function ck(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):''}
+  var g=document.getElementById('srGate');
+  function reveal(){
+    if(g) g.style.display='none';
+    if(typeof window.srBridgeAuthed==='function') window.srBridgeAuthed();
+  }
+  var t=ck('sr_gate');
+  if(t){fetch(GATE+'?verify='+encodeURIComponent(t)).then(function(r){return r.json()}).then(function(d){if(d&&d.ok)reveal()}).catch(function(){})}
+  document.getElementById('srGateForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var u=document.getElementById('srU').value.trim(),p=document.getElementById('srP').value,b=document.getElementById('srBtn'),er=document.getElementById('srErr');
+    er.textContent='';b.disabled=true;b.textContent='Signing in…';
+    fetch(GATE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u:u,p:p})}).then(function(r){return r.json()}).then(function(d){
+      if(d&&d.ok){
+        document.cookie='sr_gate='+encodeURIComponent(d.token)+'; domain=.smithapprovesme.com; path=/; max-age=2592000; secure; samesite=Lax';
+        reveal();
+      }else{
+        er.textContent='Wrong username or password.';b.disabled=false;b.textContent='Sign in';
+      }
+    }).catch(function(){er.textContent='Could not reach the server. Try again.';b.disabled=false;b.textContent='Sign in'})
+  });
+})();</script>
+
+<main id="app" inert>
+<div class="utility"><div class="wrap"><span class="live"><span class="udot"></span>AI Bridge — Private</span><span id="today"></span></div></div>
+<div class="crumb"><a href="/">← Command Center</a></div>
+<div class="masthead">
+  <div class="eyebrow">Scott Smith · Private Desk</div>
+  <h1 class="brand-title">AI Bridge</h1>
+  <div class="brand-sub">Handoffs between the bots</div>
+</div>
+<div class="wrap">
+  <section class="hero" id="hero" data-enabled="">
+    <div>
+      <div class="eyebrow">Bridge status</div>
+      <h2><span class="sdot" id="sdot" hidden></span><span id="statusWord">Checking…</span></h2>
+      <p class="note" id="statusNote">Confirming your sign-in, then loading the bridge.</p>
+    </div>
+    <button type="button" class="pause" id="pauseBtn" disabled>Pause bridge</button>
+  </section>
+
+  <div class="toolbar">
+    <label class="toggle" for="incClosed"><input id="incClosed" type="checkbox"> Include closed jobs from the last 7 days</label>
+    <button type="button" class="refresh" id="refreshBtn">Refresh</button>
+    <div class="fresh" id="freshness">Refreshes every 60 seconds</div>
+  </div>
+  <div id="banner" class="banner" role="alert" hidden></div>
+  <div id="waiting"></div>
+  <section>
+    <div class="sec-head"><h2 class="sec-title">Caps</h2><div class="sec-desc" id="capsUpdated">Limits the bridge enforces</div></div>
+    <div class="stats" id="caps"></div>
+  </section>
+  <div id="jobs"></div>
+  <div id="workers"></div>
+</div>
+</main>
+<div id="live" class="sr-only" aria-live="polite"></div>
+<div id="confirm" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h3 id="confirmTitle">Pause the bridge?</h3>
+    <p id="confirmBody"></p>
+    <div id="confirmErr" class="confirm-err"></div>
+    <div class="modal-acts">
+      <button type="button" id="confirmCancel">Cancel</button>
+      <button type="button" class="go" id="confirmGo">Pause bridge</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var BRIDGE='https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/bridge';
+  var REFRESH_MS=60000;
+  var DAY=24*60*60*1000;
+  var ROSTER=['manager','samson','claude','ready72','socials','seo_aeo','ori','messenger','retr','gojiberry','closings','smithdezines'];
+  var NAMES={
+    manager:'Manager', samson:'Samson', claude:'Claude', ready72:'Ready72', socials:'Socials',
+    seo_aeo:'SEO / AEO', ori:'Ori', messenger:'Messenger', retr:'Retr', gojiberry:'Gojiberry',
+    closings:'Closings', smithdezines:'Smithdezines'
+  };
+  var JOBS={
+    open:['Open','ink'], working:['Working','ink'], judging:['Judging','gold'], verifying:['Verifying','gold'],
+    ready_for_scott:['Ready for Scott','red'], closed:['Closed','green'], blocked:['Blocked','red'], cancelled:['Cancelled','muted']
+  };
+  var TASKS={
+    assigned:['Assigned','ink'], working:['Working','ink'], done:['Done','green'],
+    needs_help:['Needs help','gold'], needs_scott:['Needs Scott','red'], quiet:['Quiet','red']
+  };
+  var MT={timeZone:'America/Denver',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'};
+  var state={data:null,settings:null,generatedAt:null};
+  var authed=false, actionBusy=false, loadSeq=0, actionSeq=0, nextAt=Date.now()+REFRESH_MS;
+
+  function ck(n){
+    var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');
+    if(!m) return '';
+    try{return decodeURIComponent(m[1]);}catch(e){return '';}
+  }
+  function gateToken(){
+    var t=ck('sr_gate').trim();
+    if(!t || /[\r\n]/.test(t)) return '';
+    return t;
+  }
+  function esc(s){
+    return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function arr(v){return Array.isArray(v)?v:[];}
+  function safeUrl(u){
+    if(typeof u!=='string') return '';
+    try{
+      var parsed=new URL(u.trim());
+      if(parsed.protocol!=='http:' && parsed.protocol!=='https:') return '';
+      return parsed.href;
+    }catch(e){return '';}
+  }
+  function labelize(slug){
+    var k=String(slug==null?'':slug).trim();
+    if(!k) return 'Unknown';
+    if(NAMES[k]) return NAMES[k];
+    return k.replace(/[_-]+/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+  }
+  function rel(iso){
+    var t=new Date(iso).getTime();
+    if(isNaN(t)) return 'Unknown time';
+    var delta=Date.now()-t, future=delta<0, s=Math.abs(delta)/1000, n, unit;
+    if(s<45) return 'Just now';
+    if(s<3600){n=Math.round(s/60);unit='minute';}
+    else if(s<86400){n=Math.round(s/3600);unit='hour';}
+    else{n=Math.round(s/86400);unit='day';}
+    if(n<1) n=1;
+    var text=n+' '+unit+(n===1?'':'s');
+    return future?'in '+text:text+' ago';
+  }
+  function mt(iso){
+    var d=new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    try{return new Intl.DateTimeFormat('en-US',MT).format(d);}catch(e){return d.toLocaleString();}
+  }
+  function bothTimes(iso){
+    if(!iso) return '';
+    var clock=mt(iso);
+    if(!clock) return 'Unknown time';
+    return rel(iso)+' · '+clock;
+  }
+  function olderThanDay(iso){
+    if(!iso) return false;
+    var t=new Date(iso).getTime();
+    if(isNaN(t)) return false;
+    return (Date.now()-t)>DAY;
+  }
+  function isStale(t){
+    if(!t) return false;
+    if(t.stale===true) return true;
+    if(String(t.status||'')==='quiet') return true;
+    return olderThanDay(t.last_update_at);
+  }
+  function anchor(id){
+    var s=String(id==null?'':id).replace(/[^A-Za-z0-9_-]/g,function(ch){return '_'+ch.charCodeAt(0).toString(16);});
+    return 'job-'+(s||'x');
+  }
+  function badge(status, map){
+    var row=map[String(status||'')]||[labelize(status||'unknown'),'muted'];
+    return '<span class="badge '+row[1]+'">'+esc(row[0])+'</span>';
+  }
+  function tone(status, map){
+    var row=map[String(status||'')];
+    return row?row[1]:'ink';
+  }
+  function timeHtml(iso){
+    if(!iso) return '<span class="when">No update yet</span>';
+    var d=new Date(iso);
+    if(isNaN(d.getTime())) return '<span class="when">Unknown time</span>';
+    return '<span class="when" title="'+esc(d.toISOString())+'"><b>'+esc(rel(iso))+'</b> · '+esc(mt(iso))+'</span>';
+  }
+  function sectionHead(title, desc, extra){
+    return '<div class="sec-head"><h2 class="sec-title">'+esc(title)+(extra||'')+'</h2><div class="sec-desc">'+esc(desc||'')+'</div></div>';
+  }
+  function modalOpen(){return !document.getElementById('confirm').hidden;}
+  function announce(msg){
+    var el=document.getElementById('live');
+    el.textContent='';
+    setTimeout(function(){el.textContent=msg;},30);
+  }
+  function showBanner(msg){
+    var b=document.getElementById('banner');
+    if(!msg){b.hidden=true;b.textContent='';return;}
+    b.hidden=false;
+    b.textContent=msg;
+  }
+  function clearGateCookie(){
+    document.cookie='sr_gate=; domain=.smithapprovesme.com; path=/; max-age=0; secure; samesite=Lax';
+    document.cookie='sr_gate=; path=/; max-age=0';
+  }
+  function showLogin(msg, clearCookie){
+    authed=false;
+    closeModal();
+    if(clearCookie) clearGateCookie();
+    state.data=null; state.settings=null; state.generatedAt=null;
+    document.getElementById('app').inert=true;
+    document.getElementById('waiting').innerHTML='';
+    document.getElementById('jobs').innerHTML='';
+    document.getElementById('workers').innerHTML='';
+    paintCaps();
+    paintHero();
+    var g=document.getElementById('srGate');
+    if(g) g.style.display='flex';
+    var er=document.getElementById('srErr');
+    if(er) er.textContent=msg||'';
+    var b=document.getElementById('srBtn');
+    if(b){b.disabled=false;b.textContent='Sign in';}
+    if(msg){
+      var user=document.getElementById('srU');
+      if(user) user.focus();
+    }
+  }
+  function statusNote(on){
+    var n=state.data?arr(state.data.waiting_on_scott).length:0;
+    var wait=n?(n+' '+(n===1?'item is':'items are')+' waiting on you.'):'';
+    if(on===true) return wait?('Bots can hand work to each other. '+wait):'Bots can hand work to each other.';
+    if(on===false) return wait?('Handoffs are stopped. '+wait):'Handoffs are stopped until you resume.';
+    return 'Confirming your sign-in, then loading the bridge.';
+  }
+  function paintHero(){
+    var s=state.settings;
+    var known=!!(s && typeof s.enabled==='boolean');
+    var on=known?s.enabled:null;
+    var hero=document.getElementById('hero');
+    hero.className='hero'+(on===true?' running':on===false?' paused':'');
+    hero.setAttribute('data-enabled',on===null?'':String(on));
+    document.getElementById('sdot').hidden=on===null;
+    document.getElementById('statusWord').textContent=on===true?'Running':on===false?'Paused':'Checking…';
+    document.getElementById('statusNote').textContent=statusNote(on);
+    var btn=document.getElementById('pauseBtn');
+    btn.disabled=!known||actionBusy;
+    btn.className='pause'+(on===false?' do-resume':'');
+    if(actionBusy) btn.textContent=on===false?'Resuming…':'Pausing…';
+    else btn.textContent=on===false?'Resume bridge':'Pause bridge';
+  }
+  function paintCaps(){
+    var s=state.settings||{};
+    var rows=[
+      ['max_hops_per_job','Hops / job'],
+      ['max_jobs_per_day','Jobs / day'],
+      ['max_wakes_per_day','Wakes / day'],
+      ['max_pair_wakes_per_hour','Pair wakes / hour'],
+      ['max_jobs_per_driver_per_day','Jobs / driver / day']
+    ];
+    document.getElementById('caps').innerHTML=rows.map(function(r){
+      var v=(typeof s[r[0]]==='number'&&isFinite(s[r[0]]))?String(s[r[0]]):'—';
+      return '<div class="stat"><b>'+esc(v)+'</b><span>'+r[1]+'</span></div>';
+    }).join('');
+    document.getElementById('capsUpdated').textContent=s.updated_at?('Updated '+bothTimes(s.updated_at)):'Limits the bridge enforces';
+  }
+  function paintFreshness(){
+    var el=document.getElementById('freshness');
+    var left=Math.max(0,Math.ceil((nextAt-Date.now())/1000));
+    if(modalOpen()){
+      el.textContent=state.generatedAt?('Updated '+mt(state.generatedAt)+' · paused while you confirm'):'Paused while you confirm';
+      return;
+    }
+    if(!authed || !state.generatedAt){
+      el.textContent=authed?('Refreshes in '+left+'s'):'Refreshes every 60 seconds';
+      return;
+    }
+    el.textContent='Updated '+mt(state.generatedAt)+' · refreshes in '+left+'s';
+  }
+  function jobJump(id){
+    if(id==null || id==='') return '';
+    var jobs=state.data?arr(state.data.jobs):[];
+    var found=false;
+    for(var i=0;i<jobs.length;i++){ if(jobs[i] && String(jobs[i].id)===String(id)){found=true;break;} }
+    if(!found) return '';
+    return '<div class="jlinks"><a href="#'+esc(anchor(id))+'">View job →</a></div>';
+  }
+  function waitingStale(item){
+    if(olderThanDay(item.last_update_at)) return true;
+    var jobs=state.data?arr(state.data.jobs):[];
+    for(var i=0;i<jobs.length;i++){
+      var tasks=arr(jobs[i] && jobs[i].tasks);
+      for(var j=0;j<tasks.length;j++){
+        if(tasks[j] && String(tasks[j].id)===String(item.task_id) && isStale(tasks[j])) return true;
+      }
+    }
+    return false;
+  }
+  function waitCard(item){
+    if(!item || typeof item!=='object') return '';
+    if(item.type==='job'){
+      var brief=safeUrl(item.brief_link);
+      return '<article class="wait-item" data-kind="job">'+
+        '<div class="top"><span class="badge red">Ready for Scott</span></div>'+
+        '<h3 class="wtitle">'+esc(item.title||'Untitled job')+'</h3>'+
+        '<div class="taskmeta">'+(item.opened_at?esc('Opened '+bothTimes(item.opened_at)):'Ready for review')+'</div>'+
+        (brief?'<div class="jlinks"><a href="'+esc(brief)+'" target="_blank" rel="noopener noreferrer">Open brief →</a></div>':'')+
+        jobJump(item.job_id)+'</article>';
+    }
+    var stale=waitingStale(item);
+    return '<article class="wait-item'+(stale?' stale':'')+'" data-kind="task" data-stale="'+(stale?'1':'0')+'">'+
+      '<div class="top"><span class="badge red">Needs Scott</span><span class="who">'+esc(labelize(item.worker))+'</span>'+
+      (stale?'<span class="badge red">Stale</span>':'')+'</div>'+
+      '<p class="ask">'+esc(item.ask||'No ask written.')+'</p>'+
+      (item.help_question?'<div class="help"><span class="helplabel">Help question</span><p>'+esc(item.help_question)+'</p></div>':'')+
+      '<div class="taskmeta">'+timeHtml(item.last_update_at)+'</div>'+
+      jobJump(item.job_id)+'</article>';
+  }
+  function paintWaiting(){
+    var items=arr(state.data && state.data.waiting_on_scott);
+    var box=document.getElementById('waiting');
+    box.className=items.length?'has-items':'is-clear';
+    box.setAttribute('data-count',String(items.length));
+    var count=items.length?'<span class="count">'+items.length+'</span>':'';
+    var html=sectionHead('Waiting on Scott', items.length?'Needs a decision':'Clear', count);
+    html+=items.length?items.map(waitCard).join(''):'<div class="empty">Nothing is waiting on you.</div>';
+    box.innerHTML=html;
+  }
+  function taskCard(t){
+    t=t||{};
+    var stale=isStale(t);
+    var result=safeUrl(t.result_link);
+    var bits=[];
+    if(result) bits.push('<a href="'+esc(result)+'" target="_blank" rel="noopener noreferrer">Open result →</a>');
+    if(t.assigned_by) bits.push('From '+esc(labelize(t.assigned_by)));
+    bits.push(t.last_update_at?timeHtml(t.last_update_at):'<span class="when">No update yet</span>');
+    return '<article class="task'+(stale?' stale':'')+'" data-stale="'+(stale?'1':'0')+'" data-status="'+esc(String(t.status||''))+'">'+
+      '<div class="top">'+badge(t.status,TASKS)+'<span class="who">'+esc(labelize(t.worker))+'</span>'+(stale?'<span class="badge red">Stale</span>':'')+'</div>'+
+      '<p class="ask">'+esc(t.ask||'No ask written.')+'</p>'+
+      (t.help_question?'<div class="help"><span class="helplabel">Help question</span><p>'+esc(t.help_question)+'</p></div>':'')+
+      '<div class="taskmeta">'+bits.join('<span class="sep"> · </span>')+'</div></article>';
+  }
+  function jobLinks(job){
+    var html='';
+    var brief=safeUrl(job.brief_link);
+    if(brief) html+='<a href="'+esc(brief)+'" target="_blank" rel="noopener noreferrer">Open brief →</a>';
+    if(job.slack_thread_ts){
+      var slack=safeUrl(String(job.slack_thread_ts));
+      html+=slack
+        ?'<a href="'+esc(slack)+'" target="_blank" rel="noopener noreferrer">Slack thread →</a>'
+        :'<span>Slack thread <code>'+esc(String(job.slack_thread_ts))+'</code></span>';
+    }
+    return html?'<div class="jlinks">'+html+'</div>':'';
+  }
+  function jobMeta(job){
+    var parts=[];
+    if(job.driver) parts.push('Driver '+labelize(job.driver));
+    var hops=(typeof job.hop_count==='number'&&isFinite(job.hop_count))?String(job.hop_count):'';
+    var cap=(state.settings && typeof state.settings.max_hops_per_job==='number')?String(state.settings.max_hops_per_job):'';
+    if(hops && cap) parts.push(hops+' / '+cap+' hops');
+    else if(hops) parts.push(hops+' hops');
+    if(job.opened_at) parts.push('Opened '+bothTimes(job.opened_at));
+    if(job.closed_at) parts.push('Closed '+bothTimes(job.closed_at));
+    return parts.join(' · ');
+  }
+  function jobCard(job){
+    job=job||{};
+    var tasks=arr(job.tasks);
+    var closed=job.status==='closed'||job.status==='cancelled';
+    return '<article class="job st-'+tone(job.status,JOBS)+(closed?' is-closed':'')+'" id="'+esc(anchor(job.id))+'" data-status="'+esc(String(job.status||''))+'">'+
+      '<div class="top">'+badge(job.status,JOBS)+(job.kind?'<span class="badge ink">'+esc(labelize(job.kind))+'</span>':'')+(job.needs_judge?'<span class="badge gold">Needs judge</span>':'')+'</div>'+
+      '<h3 class="jtitle">'+esc(job.title||'Untitled job')+'</h3>'+
+      '<div class="jmeta">'+esc(jobMeta(job))+'</div>'+
+      jobLinks(job)+
+      '<div class="task-label">Tasks</div>'+
+      (tasks.length?tasks.map(taskCard).join(''):'<div class="empty thin">No tasks on this job.</div>')+
+      '</article>';
+  }
+  function paintJobs(){
+    var active=[], done=[];
+    arr(state.data && state.data.jobs).forEach(function(job){
+      var st=String(job && job.status || '');
+      if(st==='closed' || st==='cancelled') done.push(job);
+      else active.push(job);
+    });
+    var html=sectionHead('Open jobs', active.length?(active.length+' in motion'):'Nothing open');
+    html+=active.length?active.map(jobCard).join(''):'<div class="empty">No open jobs. The bridge is quiet.</div>';
+    if(done.length){
+      html+=sectionHead('Closed', 'Last 7 days');
+      html+=done.map(jobCard).join('');
+    }
+    document.getElementById('jobs').innerHTML=html;
+  }
+  function workerRows(list){
+    var by={}, seen={}, out=[], i;
+    arr(list).forEach(function(w){ if(w && w.worker) by[String(w.worker)]=w; });
+    for(i=0;i<ROSTER.length;i++){
+      seen[ROSTER[i]]=true;
+      out.push(by[ROSTER[i]] || {worker:ROSTER[i], last_update_at:null});
+    }
+    Object.keys(by).sort().forEach(function(name){ if(!seen[name]) out.push(by[name]); });
+    return out;
+  }
+  function paintWorkers(){
+    var rows=workerRows(state.data && state.data.workers);
+    var html=sectionHead('Workers','Last update from each bot');
+    html+='<div class="workers">'+rows.map(function(w){
+      var quiet=olderThanDay(w.last_update_at);
+      var line=w.last_update_at?bothTimes(w.last_update_at):'No update yet';
+      if(quiet) line='Quiet · '+line;
+      return '<article class="wcard'+(quiet?' quiet':'')+'" data-worker="'+esc(String(w.worker))+'"><div class="wn">'+esc(labelize(w.worker))+'</div><div class="wt">'+esc(line)+'</div></article>';
+    }).join('')+'</div>';
+    document.getElementById('workers').innerHTML=html;
+  }
+  function paint(){
+    paintHero();
+    paintCaps();
+    paintWaiting();
+    paintJobs();
+    paintWorkers();
+    paintFreshness();
+  }
+  function unauthorized(res){
+    return !!(res && (res.status===401 || (res.data && res.data.ok===false && res.data.error==='unauthorized')));
+  }
+  function readJson(r){
+    return r.text().then(function(t){
+      var data=null;
+      if(t){ try{data=JSON.parse(t);}catch(e){data=null;} }
+      return {status:r.status, data:data};
+    });
+  }
+  function bridgeFetch(body){
+    var token=gateToken();
+    if(!token) return Promise.reject(new Error('no-token'));
+    return fetch(BRIDGE,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-gate-token':token},
+      body:JSON.stringify(body)
+    }).then(readJson);
+  }
+  function load(){
+    var my=++loadSeq;
+    nextAt=Date.now()+REFRESH_MS;
+    if(!gateToken()){ showLogin('', false); return; }
+    var body={action:'status'};
+    if(document.getElementById('incClosed').checked) body.include_closed=true;
+    var btn=document.getElementById('refreshBtn');
+    btn.disabled=true;
+    btn.textContent='Refreshing…';
+    document.getElementById('app').setAttribute('aria-busy','true');
+    if(!state.data) document.getElementById('jobs').innerHTML='<p class="loading">Loading the bridge…</p>';
+    bridgeFetch(body).then(function(res){
+      if(my!==loadSeq) return;
+      if(unauthorized(res)){ showLogin('Sign in again to continue.', true); return; }
+      if(res.status===403){ showBanner('That action is not allowed.'); return; }
+      if(!res.data || res.data.ok!==true){
+        showBanner(state.data?'Could not refresh the bridge. Showing the last update.':'Could not load the bridge right now.');
+        return;
+      }
+      showBanner('');
+      state.data=res.data;
+      state.settings=res.data.settings||null;
+      state.generatedAt=res.data.generated_at || new Date().toISOString();
+      paint();
+    }).catch(function(){
+      if(my!==loadSeq) return;
+      showBanner(state.data?'Could not reach the bridge. Showing the last update.':'Could not reach the bridge. Check the connection and refresh.');
+    }).then(function(){
+      if(my!==loadSeq) return;
+      btn.disabled=false;
+      btn.textContent='Refresh';
+      document.getElementById('app').setAttribute('aria-busy','false');
+      paintFreshness();
+    });
+  }
+  function closeModal(){
+    var wasOpen=modalOpen();
+    document.getElementById('confirm').hidden=true;
+    document.body.style.overflow='';
+    document.getElementById('confirmGo').disabled=false;
+    document.getElementById('confirmCancel').disabled=false;
+    if(authed) document.getElementById('app').inert=false;
+    if(wasOpen){
+      var pause=document.getElementById('pauseBtn');
+      if(pause && !pause.disabled) pause.focus();
+    }
+    paintFreshness();
+  }
+  function openConfirm(){
+    var turningOff=!!(state.settings && state.settings.enabled);
+    document.getElementById('confirmTitle').textContent=turningOff?'Pause the bridge?':'Resume the bridge?';
+    document.getElementById('confirmBody').textContent=turningOff
+      ?'Workers will stop handing work to each other until you resume. Jobs already open stay where they are.'
+      :'Workers will start handing work to each other again, inside the daily caps.';
+    var go=document.getElementById('confirmGo');
+    go.textContent=turningOff?'Pause bridge':'Resume bridge';
+    go.className=turningOff?'go':'go resume';
+    go.dataset.enabled=turningOff?'false':'true';
+    go.disabled=false;
+    document.getElementById('confirmCancel').disabled=false;
+    document.getElementById('confirmErr').textContent='';
+    document.getElementById('confirm').hidden=false;
+    document.body.style.overflow='hidden';
+    document.getElementById('app').inert=true;
+    document.getElementById('confirmCancel').focus();
+    paintFreshness();
+  }
+  function setEnabled(enabled){
+    if(actionBusy) return;
+    if(!gateToken()){ showLogin('Sign in again to continue.', false); return; }
+    actionBusy=true;
+    paintHero();
+    var go=document.getElementById('confirmGo');
+    var cancel=document.getElementById('confirmCancel');
+    var err=document.getElementById('confirmErr');
+    go.disabled=true; cancel.disabled=true;
+    go.textContent=enabled?'Resuming…':'Pausing…';
+    err.textContent='';
+    var my=++actionSeq;
+    bridgeFetch({action:'set_enabled',enabled:!!enabled}).then(function(res){
+      if(my!==actionSeq) return;
+      if(unauthorized(res)){ showLogin('Sign in again to continue.', true); return; }
+      if(res.status===403){ closeModal(); showBanner('That action is not allowed.'); return; }
+      if(!res.data || res.data.ok!==true){ err.textContent='Could not update the bridge. Nothing was changed.'; return; }
+      if(res.data.settings){
+        state.settings=res.data.settings;
+        if(state.data) state.data.settings=res.data.settings;
+      }else if(state.settings){
+        state.settings=Object.assign({}, state.settings, {enabled:!!enabled});
+      }
+      closeModal();
+      announce(enabled?'Bridge resumed.':'Bridge paused.');
+      paint();
+      load();
+    }).catch(function(){
+      if(my!==actionSeq) return;
+      err.textContent='Could not reach the bridge. Nothing was changed.';
+    }).then(function(){
+      if(my!==actionSeq) return;
+      actionBusy=false;
+      go.disabled=false;
+      cancel.disabled=false;
+      paintHero();
+      if(!document.getElementById('confirm').hidden) go.textContent=enabled?'Resume bridge':'Pause bridge';
+    });
+  }
+
+  document.getElementById('today').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',timeZone:'America/Denver'});
+  var inc=document.getElementById('incClosed');
+  try{ if(sessionStorage.getItem('bridge_include_closed')==='1') inc.checked=true; }catch(e){}
+  inc.addEventListener('change',function(){
+    try{ sessionStorage.setItem('bridge_include_closed', inc.checked?'1':'0'); }catch(e){}
+    if(authed) load();
+  });
+  document.getElementById('refreshBtn').addEventListener('click',function(){
+    if(authed && !modalOpen() && !actionBusy) load();
+  });
+  document.getElementById('pauseBtn').addEventListener('click',function(){
+    if(this.disabled || !state.settings || typeof state.settings.enabled!=='boolean') return;
+    openConfirm();
+  });
+  document.getElementById('confirmCancel').addEventListener('click',function(){ if(!actionBusy) closeModal(); });
+  document.getElementById('confirmGo').addEventListener('click',function(){ setEnabled(this.dataset.enabled==='true'); });
+  document.getElementById('confirm').addEventListener('click',function(e){ if(e.target===this && !actionBusy) closeModal(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && modalOpen() && !actionBusy) closeModal(); });
+  setInterval(function(){
+    paintFreshness();
+    if(!authed || modalOpen() || actionBusy) return;
+    if(Date.now()>=nextAt) load();
+  },1000);
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible' && authed && !modalOpen() && !actionBusy && Date.now()>=nextAt) load();
+  });
+
+  function onAuthed(){
+    authed=true;
+    document.getElementById('app').inert=false;
+    var er=document.getElementById('srErr');
+    if(er) er.textContent='';
+    load();
+  }
+  window.srBridgeAuthed=onAuthed;
+  if(window.__bridgeAuthedFlag) onAuthed();
+  paintCaps();
+  paintHero();
+  paintFreshness();
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});}</script>
+</body>
+</html>
