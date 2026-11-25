@@ -15,6 +15,7 @@
   "shortcuts": [
     { "name": "AI Bridge", "url": "/bridge.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Business Call Block", "url": "/business-calls.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Agent Call Block", "url": "/agent-calls.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Agent Call Block", "url": "/agent-calls.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Q1 Top 26", "url": "/top26.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }
