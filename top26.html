@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b2138">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Command">
+
+<title>Q1 Top 26 | Scott Smith</title>
+<style>
+:root{--navy:#0b2138;--navy-3:#173b60;--gold:#b89252;--gold-soft:#eadfc9;--ivory:#f4f0e7;--paper:#fffdf9;--ink:#132236;--muted:#667384;--line:#ddd7ca;--green:#2f7a5d;--green-soft:#e8f3ed;--red:#9a3f48;--red-soft:#fbedef;--amber:#9b6b1f;--amber-soft:#fff4df}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(184,146,82,.10),transparent 27rem),var(--ivory);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;padding-bottom:132px}
+.app-header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;min-height:66px;padding:10px 16px;color:#fff;background:rgba(11,33,56,.97);border-bottom:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px)}
+.brand-mark{width:34px;height:34px;border:1px solid rgba(255,255,255,.28);display:grid;place-items:center;border-radius:50%;color:var(--gold-soft);font:700 18px Georgia,serif;flex:none}
+.eyebrow{color:var(--gold-soft);font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+.htitle{font:600 20px/1 Georgia,serif}
+.counts{margin-left:auto;text-align:right;font-variant-numeric:tabular-nums}
+.counts b{font:700 18px Inter;display:block;line-height:1}
+.counts span{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.wrap{width:min(640px,calc(100% - 24px));margin:16px auto}
+.progress{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.ptrack{flex:1;height:8px;border-radius:99px;background:#e5dfd3;overflow:hidden}
+.pfill{height:100%;width:0;background:var(--gold);transition:.25s}
+.ptext{font-size:12px;color:var(--muted);white-space:nowrap;font-weight:700}
+.blurb{background:#fff;border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:13.5px;line-height:1.45;color:#3a4653}
+.card{background:#fff;border:1px solid var(--line);border-left:5px solid var(--navy-3);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 3px 12px rgba(11,33,56,.06)}
+.card.done{opacity:.5}
+.aname{font:600 21px/1.15 Georgia,serif;margin:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-soft);border-radius:99px;padding:3px 9px}
+.tag.retry{color:var(--amber);border-color:#ecd9ad;background:var(--amber-soft)}
+.tag.camp{color:#6b3fa0;border-color:#d9c9ef;background:#f4eefc}
+.tag.ghl{color:var(--green);border-color:#bcd9c2;background:var(--green-soft)}
+.meta{margin-top:8px;font-size:13.5px;font-weight:700;color:#3a4653;line-height:1.4}
+.why{margin-top:8px;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:9px 11px;font-size:13.5px;line-height:1.45;color:#3a4653}
+.retr{display:inline-block;margin-top:8px;font-size:13px;font-weight:800;color:var(--navy-3)}
+.phone{margin:9px 0 14px;font:600 17px 'Inter';color:#333;font-variant-numeric:tabular-nums}
+.nophone{margin:9px 0 12px;font-size:13.5px;color:var(--muted);line-height:1.4}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.acts a,.acts button{display:flex;align-items:center;justify-content:center;gap:7px;border-radius:11px;padding:14px;font-weight:800;font-size:15px;text-decoration:none;border:1px solid transparent;cursor:pointer}
+.call{background:var(--green);color:#fff;border-color:var(--green)}
+.text2{background:#fff;color:var(--navy-3);border-color:var(--navy-3)}
+.row2{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:9px}
+.row3{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:8px;margin-top:8px}
+.row3 button,.row2 button{display:flex;align-items:center;justify-content:center;gap:6px;border-radius:11px;padding:12px 6px;font-weight:800;font-size:14px;border:1px solid transparent;cursor:pointer}
+.worked{background:var(--navy);color:#fff;border-color:var(--navy)}
+.na{background:#fff;color:#6b5a1a;border-color:#e6d9ad}
+.skip{background:#fff;color:var(--muted);border-color:var(--line)}
+.savenote{background:var(--paper);color:var(--navy);border-color:var(--navy-3)}
+.talked{background:#fff;color:var(--green);border-color:#bcd9c2}
+.fup{background:#fff;color:var(--navy-3);border-color:var(--line)}
+.prior{margin-top:11px;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--navy-3);border-radius:10px;padding:9px 11px;font-size:13px;line-height:1.45;color:#3a4653;white-space:pre-wrap;max-height:120px;overflow-y:auto}
+.priorlbl{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.hint{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.4}
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.empty h2{font:600 24px Georgia,serif;color:var(--ink);margin:0 0 8px}
+.loading{text-align:center;color:var(--muted);padding:30px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:var(--navy);color:#fff;border-radius:99px;padding:10px 16px;font-size:13px;font-weight:800;transition:.2s;z-index:60}
+.toast.show{opacity:.97;transform:translate(-50%,0)}
+.playbook{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.playbook>summary{cursor:pointer;list-style:none;padding:13px 15px;font:700 14px Inter;color:var(--navy);display:flex;align-items:center;gap:8px}
+.playbook>summary::-webkit-details-marker{display:none}
+.playbook>summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid #b3aea3;border-bottom:2px solid #b3aea3;transform:rotate(45deg);transition:.2s}
+.playbook[open]>summary::after{transform:rotate(-135deg)}
+.pb{padding:0 15px 15px}
+.pblbl{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:12px 0 4px}
+.say{position:relative;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:12px 36px 12px 13px;font-size:15px;line-height:1.5;cursor:pointer;margin:6px 0}
+.say::after{content:"⧉";position:absolute;right:11px;top:10px;color:#c3bdb0;font-size:14px}
+.obj{border-top:1px solid var(--line);margin-top:6px;padding-top:4px}
+.obj .q{font-weight:800;font-size:11px;color:var(--navy);margin-top:11px}
+.obj .a{font-size:13.5px;color:#3a4653;line-height:1.45;margin-top:2px}
+.note{width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:10px 11px;margin-top:11px;font:inherit;font-size:15px;min-height:42px;resize:vertical;background:#fff}
+.coachbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,253,249,.97);backdrop-filter:blur(10px);border-top:2px solid var(--navy);padding:9px 0 calc(9px + env(safe-area-inset-bottom))}
+.cb{width:min(640px,calc(100% - 24px));margin:auto}
+.cb-eyebrow{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+#ans{position:relative;background:#fff;border:1px solid var(--line);border-left:5px solid var(--green);border-radius:10px;padding:12px 36px 12px 14px;color:#123;font-size:15px;line-height:1.5;margin-bottom:9px;display:none;max-height:44vh;overflow-y:auto}
+#ans.err{border-left-color:var(--red)}
+#ansT{white-space:pre-wrap}
+#ansX{position:sticky;top:0;float:right;margin:-4px -30px 0 0;width:26px;height:26px;border:1px solid var(--line);background:#fff;color:#666;font:700 16px/1 Inter;border-radius:7px;cursor:pointer}
+.crow{display:flex;gap:8px}
+#cq{flex:1;border:1px solid #b5b0a5;border-radius:10px;padding:11px 12px;font-size:16px;background:#fff}
+#cask{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:0 18px;font-weight:800;cursor:pointer}
+.picker{background:#fff;border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.picker label{display:block;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.picker .pv{margin-top:9px;font-size:13.5px;line-height:1.45;color:#3a4653;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<div id="srGate" style="position:fixed;inset:0;z-index:99999;background:#0b2138;display:flex;align-items:center;justify-content:center;font-family:Inter,Arial,sans-serif;padding:16px">
+  <form id="srGateForm" style="width:min(360px,92%);background:#fffdf9;border-radius:16px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="text-align:center;margin-bottom:18px">
+      <div style="width:46px;height:46px;border:1px solid #b89252;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;color:#b89252;font:700 21px Georgia,serif">S</div>
+      <div style="font:800 10px Inter,Arial;letter-spacing:.16em;text-transform:uppercase;color:#b89252">Smith Approves Me</div>
+      <div style="font:600 22px Georgia,serif;color:#0b2138;margin-top:4px">Private Login</div>
+    </div>
+    <input id="srU" placeholder="Username" autocomplete="username" autocapitalize="none" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;margin-bottom:10px;font-size:16px">
+    <input id="srP" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;border:1px solid #d7d1c6;border-radius:10px;padding:12px;font-size:16px">
+    <div id="srErr" style="color:#9a3f48;font-size:13px;min-height:18px;margin:6px 0"></div>
+    <button type="submit" id="srBtn" style="width:100%;background:#0b2138;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;font-size:15px;cursor:pointer">Sign in</button>
+  </form>
+</div>
+<script>(function(){var GATE="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/gate";function ck(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):''}var g=document.getElementById('srGate');function reveal(){if(g&&g.parentNode)g.parentNode.removeChild(g)}var t=ck('sr_gate');if(t){fetch(GATE+'?verify='+encodeURIComponent(t)).then(function(r){return r.json()}).then(function(d){if(d&&d.ok)reveal()}).catch(function(){})}document.getElementById('srGateForm').addEventListener('submit',function(e){e.preventDefault();var u=document.getElementById('srU').value.trim(),p=document.getElementById('srP').value,b=document.getElementById('srBtn'),er=document.getElementById('srErr');er.textContent='';b.disabled=true;b.textContent='Signing in…';fetch(GATE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u:u,p:p})}).then(function(r){return r.json()}).then(function(d){if(d&&d.ok){document.cookie='sr_gate='+encodeURIComponent(d.token)+'; domain=.smithapprovesme.com; path=/; max-age=2592000; secure; samesite=Lax';reveal()}else{er.textContent='Wrong username or password.';b.disabled=false;b.textContent='Sign in'}}).catch(function(){er.textContent='Could not reach the server. Try again.';b.disabled=false;b.textContent='Sign in'})})})();</script>
+
+<header class="app-header">
+  <div class="brand-mark">S</div>
+  <div><div class="eyebrow">Q1 2027 · Referral partners</div><div class="htitle">Q1 Top 26</div></div>
+  <div class="counts"><b id="cRemain">—</b><span>agents left</span></div>
+</header>
+
+<div class="wrap">
+  <div class="progress">
+    <div class="ptrack"><div class="pfill" id="pfill"></div></div>
+    <div class="ptext" id="ptext">0 of 26 worked</div>
+  </div>
+  <div class="blurb">Agents whose brokerage has an in-house lender they don't use, and who spread their loans across several lenders. Q1 2027 referral-partner list for a mortgage loan officer.</div>
+  <div class="picker">
+    <label>Manual text · opens Messages on your phone. Nothing sends from this page.</label>
+    <div class="pv" id="tplPv"></div>
+  </div>
+  <details class="playbook">
+    <summary>📓 Opener &amp; pushback playbook</summary>
+    <div class="pb">
+      <div class="pblbl">Your opener</div>
+      <div class="say">"Hey [name], this is Scott — I'm a lender here in Colorado. I'm not calling to take anyone's place. Your brokerage has an in-house lender, and a lot of your buyers still end up with someone else. When a file gets weird, I want to be the name you call."</div>
+      <div class="pblbl" style="margin-top:16px">If they push back</div>
+      <div class="obj">
+        <div class="q">"I already have a lender."</div>
+        <div class="a"><b>First, ask:</b> "Who's your lender?"<br><br>Then: "Keep them. This isn't about me being your go-to today. It's about the deal that stalled — the one your in-house shop passed on, or the buyer who went quiet. Let me be the backup so that commission still gets paid."</div>
+        <div class="q">"We have to use our in-house lender."</div>
+        <div class="a">"A lot of brokerages say that, and then the buyer still picks someone else. I'm not asking you to move the easy ones. I'm asking about the file that already left the building."</div>
+        <div class="q">"I don't have anything stuck right now."</div>
+        <div class="a">"Then I'm the easiest call you'll get today. When one does stall — and one will — I'll give you a straight answer fast, and if it's a no I'll tell you it's a no."</div>
+        <div class="q">"Not interested."</div>
+        <div class="a">"No problem. Can I send you the Monday market note? No pitch, and you can tell me to stop anytime."</div>
+      </div>
+      <div class="pblbl" style="margin-top:16px">The line that works</div>
+      <div class="obj">
+        <div class="say">"I don't just want you to send me business — but if you ever want to do some things to generate business together, I'm 100% open."</div>
+        <div class="a">No ask, no referral request, no pitch. Use it near the end, then stop talking.<br><br><b>[COMPLIANCE]</b> If they take you up on it, anything co-branded has to be fair market value with a documented, proportional cost split and cannot be tied to referrals. Route it through compliance before you agree to specifics.</div>
+      </div>
+      <div class="pblbl" style="margin-top:16px">Never say</div>
+      <div class="obj"><div class="a">No rate, APR or payment figure — not even a ballpark. Never "we'll get it closed" or "we never lose one" — say "let's see if it's doable" and "I'll tell you fast." Never trade services for referrals. If they say stop, skip them and note it.</div></div>
+    </div>
+  </details>
+  <div id="list"><div class="loading">Loading the Top 26…</div></div>
+</div>
+
+<div class="toast" id="toast">Saved</div>
+
+<div class="coachbar"><div class="cb">
+  <div id="ans"><button id="ansX" type="button" aria-label="Close">×</button><div id="ansT"></div></div>
+  <div class="cb-eyebrow">Ask the Coach · Q1 Top 26</div>
+  <div class="crow"><input id="cq" placeholder="What did the agent just say?" autocomplete="off"><button id="cask">Ask</button></div>
+</div></div>
+
+<script>
+var API="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/top26-calls";
+var K="sr-coach-7f3a91c8b2";
+var REPORT="https://partners.smithapprovesme.com";
+var TOTAL=26;
+var listEl=document.getElementById('list'),toast=document.getElementById('toast');
+var today=new Date().toLocaleDateString('en-CA',{timeZone:'America/Denver'});
+var doneToday=0,workedTotal=0,activeLeft=0;
+try{var s=JSON.parse(localStorage.getItem('top26_done')||'{}'); if(s.date===today) doneToday=s.n||0;}catch(e){}
+function saveDone(){try{localStorage.setItem('top26_done',JSON.stringify({date:today,n:doneToday}));}catch(e){}}
+function flash(m){toast.textContent=m;toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){toast.classList.remove('show')},1400);}
+function updProgress(){
+  document.getElementById('pfill').style.width=Math.min(workedTotal/TOTAL*100,100)+'%';
+  document.getElementById('ptext').textContent=workedTotal+' of '+TOTAL+' worked'+(doneToday?' · '+doneToday+' today':'');
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function firstName(c){
+  var n=(c&&c.name)||'';
+  if(/team|collection/i.test(n)) return 'there';
+  var p=n.trim().split(/\s+/);
+  return p[0]||'there';
+}
+var TEXT="Hi {name}, this is Scott with Citywide Mortgage. I'm still here if a file on your desk needs a second look — especially one that didn't fit the in-house lender.\n\n"+REPORT+"\nhttps://www.citywidehm.com/loan-officers/scott-smith-2244351";
+function msgFor(c){return TEXT.replace(/\{name\}/g,firstName(c));}
+document.getElementById('tplPv').textContent=msgFor({name:'[name]'});
+function phone10(c){
+  var d=String((c&&c.phone10)||'').replace(/\D/g,'');
+  if(d.length===11&&d.charAt(0)==='1') d=d.slice(1);
+  return d.length===10?d:'';
+}
+function actionLabel(a){
+  return a==='no_answer'?'no answer yet':a==='talked'?'talked':a==='follow_up'?'call back':a==='worked'?'texted':'called';
+}
+function card(c){
+  var el=document.createElement('div');el.className='card';el._c=c;
+  var tel=phone10(c);
+  var tags='<span class="tag">#'+esc(c.rank)+'</span>';
+  if(c.campaign_flag==='stale-listing') tags+='<span class="tag camp">Stale listing</span>';
+  if(c.in_ghl) tags+='<span class="tag ghl">In GHL</span>';
+  if(c.calls>0) tags+='<span class="tag retry">Call '+(c.calls+1)+' · '+esc(actionLabel(c.last_action))+'</span>';
+  var prior=(c.notes&&String(c.notes).trim())
+    ? '<div class="prior"><div class="priorlbl">Earlier notes</div>'+esc(String(c.notes).trim())+'</div>' : '';
+  var reach=tel
+    ? '<div class="phone">'+esc(c.phone_display||tel)+'</div>'+
+      '<div class="acts">'+
+        '<a class="call" href="tel:+1'+tel+'">📞 Call</a>'+
+        '<a class="text2" href="sms:+1'+tel+'">📲 Text</a>'+
+      '</div>'
+    : '<div class="nophone">No phone on file. Open the RETR profile, or add them to the same contacts the Agent Call Block uses and the number will show up here.</div>';
+  el.innerHTML=
+    '<h3 class="aname">'+esc(c.name)+'</h3>'+
+    '<div class="tags">'+tags+'</div>'+
+    '<div class="meta">'+esc(c.brokerage)+' · '+esc(c.area)+' · '+esc(c.buyer_sides_12mo)+' buyer sides</div>'+
+    '<div class="why">'+esc(c.why)+'</div>'+
+    '<a class="retr" href="'+esc(c.retr_url)+'" target="_blank" rel="noopener">RETR profile</a>'+
+    reach+
+    prior+
+    '<textarea class="note" placeholder="Notes — what they said, callback time, who they use…"></textarea>'+
+    '<div class="row3">'+
+      '<button class="savenote" data-a="save_note">💾 Save note</button>'+
+      '<button class="talked" data-a="talked">Talked</button>'+
+      '<button class="fup" data-a="follow_up">Call back</button>'+
+    '</div>'+
+    '<div class="row2">'+
+      '<button class="worked" data-a="worked">Done — texted</button>'+
+      '<button class="na" data-a="no_answer">No answer</button>'+
+      '<button class="skip" data-a="skip">Skip</button>'+
+    '</div>';
+  el.querySelectorAll('button').forEach(function(b){b.onclick=function(){act(c.id,b.dataset.a,el);};});
+  var t2=el.querySelector('.text2');
+  if(t2) t2.onclick=function(){t2.href='sms:+1'+tel+'?&body='+encodeURIComponent(msgFor(c));};
+  return el;
+}
+function stamp(){var d=new Date();return ('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2)+'/'+String(d.getFullYear()).slice(-2);}
+function showSaved(el,note){
+  var box=el.querySelector('.prior');
+  if(!box){
+    box=document.createElement('div');box.className='prior';
+    box.innerHTML='<div class="priorlbl">Earlier notes</div>';
+    el.insertBefore(box,el.querySelector('.note'));
+  }
+  box.appendChild(document.createTextNode((box.childNodes.length>1?'\n':'')+stamp()+': '+note));
+  box.scrollTop=box.scrollHeight;
+}
+function act(id,action,el){
+  var ta=el.querySelector('.note'), note=(ta&&ta.value||'').trim();
+  var btns=el.querySelectorAll('button,a');
+  var keeps=(action==='save_note'||action==='talked'||action==='follow_up');
+  if(action==='save_note'&&!note){flash('Type a note first');if(ta)ta.focus();return;}
+  btns.forEach(function(x){x.style.pointerEvents='none';});
+  if(!keeps)el.classList.add('done');
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({k:K,id:id,action:action,notes:note})})
+    .then(function(r){return r.json()}).then(function(d){
+      if(!d||!d.ok){flash('Save failed — try again');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});return;}
+      if(keeps){
+        if(note){showSaved(el,note);ta.value='';}
+        btns.forEach(function(x){x.style.pointerEvents='';});
+        if(action==='save_note'){flash('Note saved');return;}
+        flash(action==='talked'?'Call logged — stays in your list':'Call back logged — stays in your list');
+        setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},500);
+        return;
+      }
+      if(action==='worked'){workedTotal++;doneToday++;activeLeft=Math.max(0,activeLeft-1);saveDone();updProgress();document.getElementById('cRemain').textContent=activeLeft;flash('Logged');}
+      else if(action==='no_answer'){flash('Marked no-answer');}
+      else{activeLeft=Math.max(0,activeLeft-1);document.getElementById('cRemain').textContent=activeLeft;flash('Skipped');}
+      setTimeout(function(){el.remove();if(!listEl.querySelector('.card'))load();},260);
+    }).catch(function(){flash('Network error');el.classList.remove('done');btns.forEach(function(x){x.style.pointerEvents='';});});
+}
+function load(){
+  listEl.innerHTML='<div class="loading">Loading the Top 26…</div>';
+  fetch(API+'?data=1&k='+K).then(function(r){return r.json()}).then(function(d){
+    if(!d||d.error){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';return;}
+    TOTAL=d.total||26;
+    workedTotal=d.worked_total||0;
+    activeLeft=d.active_remaining!=null?d.active_remaining:0;
+    document.getElementById('cRemain').textContent=(d.active_remaining!=null?d.active_remaining:'—');
+    updProgress();
+    var rows=(d.list&&d.list.length)?d.list:[];
+    if(!rows.length){listEl.innerHTML='<div class="empty"><h2>All caught up</h2>'+workedTotal+' of '+TOTAL+' marked worked'+(d.skipped_total?' · '+d.skipped_total+' skipped':'')+'.</div>';return;}
+    listEl.innerHTML='';
+    rows.forEach(function(c){listEl.appendChild(card(c));});
+    var h=document.createElement('div');h.className='hint';
+    h.innerHTML='Ranked list of '+TOTAL+'. A purple <b>Stale listing</b> badge means they are also tagged in another campaign. <b>Call</b> and <b>Text from my phone</b> only open your phone — this page does not send anything. <b>Save note</b> keeps the card open. <b>Talked</b> and <b>Call back</b> log the call and keep them in the list. <b>Done — texted</b>, <b>No answer</b> and <b>Skip</b> clear them from this pass. No-answers come back, with a retry tag, the next time you open the list.';
+    listEl.appendChild(h);
+  }).catch(function(){listEl.innerHTML='<div class="empty">Could not load. Pull to refresh or try again.</div>';});
+}
+document.addEventListener('click',function(e){var s=e.target.closest('.say');if(s){var t=s.innerText.replace('⧉','').trim();if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){flash('Copied')},function(){});}}});
+
+var SCRIPT_API="https://qfhfuesnjfuwfujhvgpa.supabase.co/functions/v1/script";
+var ansEl=document.getElementById('ans'),ansT=document.getElementById('ansT'),cq=document.getElementById('cq'),cask=document.getElementById('cask');
+function showAns(t,err){ansT.textContent=t;ansEl.className=err?'err':'';ansEl.style.display='block';ansEl.scrollTop=0;}
+document.getElementById('ansX').onclick=function(){ansEl.style.display='none';cq.value='';};
+function askCoach(){var q=cq.value.trim();if(!q)return;showAns('Thinking…',false);cask.disabled=true;
+  fetch(SCRIPT_API+'?ask='+encodeURIComponent(q)+'&k='+K+'&ctx=agent').then(function(r){return r.json()}).then(function(d){showAns(d.answer||'No answer.',false)}).catch(function(){showAns('Could not reach the coach. Try again.',true)}).finally(function(){cask.disabled=false});}
+cask.onclick=askCoach;
+cq.addEventListener('keydown',function(e){if(e.key==='Enter')askCoach();});
+
+load();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});}</script>
+</body>
+</html>
